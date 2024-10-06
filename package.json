@@ -1,0 +1,12 @@
+{
+  "name": "build-logic",
+  "packageManager": "yarn@4.5.0",
+  "devDependencies": {
+    "@commitlint/cli": "^19.5.0",
+    "@commitlint/config-conventional": "^19.5.0",
+    "husky": "^8.0.0"
+  },
+  "scripts": {
+    "prepare": "husky install"
+  }
+}

@@ -1,0 +1,53 @@
+root = true
+
+[*]
+charset = utf-8
+end_of_line = lf
+indent_size = 2
+indent_style = space
+insert_final_newline = true
+trim_trailing_whitespace = true
+max_line_length = 120
+ij_visual_guides = 100
+
+[{*.kt,*.kts}]
+ij_kotlin_code_style_defaults = KOTLIN_OFFICIAL
+ij_continuation_indent_size = 2
+ij_kotlin_keep_indents_on_empty_lines = false
+ij_kotlin_keep_line_breaks = true
+ij_kotlin_keep_first_column_comment = true
+ij_kotlin_method_parameters_wrap = on_every_item
+ij_kotlin_call_parameters_wrap = on_every_item
+ij_kotlin_if_rparen_on_new_line = true
+ij_kotlin_space_before_if_parentheses = true
+ij_kotlin_space_after_comma = true
+ij_kotlin_keep_blank_lines_in_declarations = 1
+ij_kotlin_keep_blank_lines_in_code = 1
+ij_kotlin_imports_layout = *
+
+[**/res/**.xml]
+indent_size = 2
+ij_continuation_indent_size = 2
+ij_xml_keep_line_breaks_in_text = true
+ij_xml_attribute_wrap = normal
+ij_xml_text_wrap = normal
+ij_xml_keep_blank_lines = 2
+ij_xml_space_inside_empty_tag = true
+ij_xml_use_custom_settings = true
+
+[*.md]
+trim_trailing_whitespace = false
+
+[{*.yaml,*.yml}]
+indent_size = 2
+ij_yaml_keep_line_breaks = true
+
+[{*.bash,*.sh,*.zsh}]
+indent_size = 2
+tab_width = 2
+
+[*.bat]
+end_of_line = crlf
+
+[*.properties]
+ij_properties_keep_blank_lines = true

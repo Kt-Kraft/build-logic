@@ -1,0 +1,31 @@
+[versions]
+android-tools-build = "8.6.1"
+android-tools-common = "31.6.1"
+benManes = "0.51.0"
+catalogUpdate = "0.8.4"
+guava = "23.0"
+jgit = "7.0.0.202409031743-r"
+kase-change = "1.4.1"
+kotlin = "2.0.20"
+kotlin-dokka = "1.9.20"
+r8-version = "8.5.35"
+secrets = "2.0.1"
+
+[libraries]
+android-application-gradle-plugin = { module = "com.android.application:com.android.application.gradle.plugin", version.ref = "android-tools-build" }
+android-library-gradle-plugin = { module = "com.android.library:com.android.library.gradle.plugin", version.ref = "android-tools-build" }
+android-r8 = { module = "com.android.tools:r8", version.ref = "r8-version" }
+android-tools-build = { module = "com.android.tools.build:gradle", version.ref = "android-tools-build" }
+android-tools-common = { module = "com.android.tools:common", version.ref = "android-tools-common" }
+compose-compiler-gradle-plugin = { module = "org.jetbrains.kotlin:compose-compiler-gradle-plugin", version.ref = "kotlin" }
+google-guava = { module = "com.google.guava:guava", version.ref = "guava" }
+jgit = { module = "org.eclipse.jgit:org.eclipse.jgit", version.ref = "jgit" }
+kase-change = { module = "net.pearx.kasechange:kasechange-jvm", version.ref = "kase-change" }
+kotlin-android-gradle-plugin = { module = "org.jetbrains.kotlin.android:org.jetbrains.kotlin.android.gradle.plugin", version.ref = "kotlin" }
+kotlin-gradle-plugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
+secret-gradle-plugin = { module = "com.google.android.libraries.mapsplatform.secrets-gradle-plugin:secrets-gradle-plugin", version.ref = "secrets" }
+
+[plugins]
+ben-manes-versions = { id = "com.github.ben-manes.versions", version.ref = "benManes" }
+dokka = { id = "org.jetbrains.dokka", version.ref = "kotlin-dokka" }
+version-catalog-update = { id = "nl.littlerobots.version-catalog-update", version.ref = "catalogUpdate" }
