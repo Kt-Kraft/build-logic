@@ -76,19 +76,19 @@ gradlePlugin {
       id = "android.config"
       displayName = "Android Config Plugin"
       description = displayName
-      implementationClass = "com.indramahkota.convention.android.AndroidConfigPlugin"
+      implementationClass = "convention.android.AndroidConfigPlugin"
     }
     create("android-app") {
       id = "android.app"
       displayName = "Android Application Plugin"
       description = displayName
-      implementationClass = "com.indramahkota.convention.android.AndroidApplicationPlugin"
+      implementationClass = "convention.android.AndroidApplicationPlugin"
     }
     create("android-library") {
       id = "android.lib"
       displayName = "Android Library Plugin"
       description = displayName
-      implementationClass = "com.indramahkota.convention.android.AndroidLibraryPlugin"
+      implementationClass = "convention.android.AndroidLibraryPlugin"
     }
 
     // Compose
@@ -96,13 +96,13 @@ gradlePlugin {
       id = "compose.app"
       displayName = "Compose Application Plugin"
       description = displayName
-      implementationClass = "com.indramahkota.convention.compose.ComposeApplicationPlugin"
+      implementationClass = "convention.compose.ComposeApplicationPlugin"
     }
     register("compose-library") {
       id = "compose.lib"
       displayName = "Compose Library Plugin"
       description = displayName
-      implementationClass = "com.indramahkota.convention.compose.ComposeLibraryPlugin"
+      implementationClass = "convention.compose.ComposeLibraryPlugin"
     }
 
     // Publishing
@@ -110,13 +110,13 @@ gradlePlugin {
       id = "publish.config"
       displayName = "Publish Config Plugin"
       description = displayName
-      implementationClass = "com.indramahkota.convention.publishing.PublishConfigPlugin"
+      implementationClass = "convention.publishing.PublishConfigPlugin"
     }
     create("publish") {
       id = "publish"
       displayName = "Publishing Plugin"
       description = displayName
-      implementationClass = "com.indramahkota.convention.publishing.PublishPlugin"
+      implementationClass = "convention.publishing.PublishPlugin"
     }
   }
 }
@@ -136,7 +136,7 @@ afterEvaluate {
         licenses {
           license {
             name.set("MIT License")
-            url.set("https://github.com/indramahkota/build-logic/blob/main/LICENSE")
+            url.set("https://github.com/Kt-Kraft/build-logic/blob/main/LICENSE")
             distribution.set("repo")
           }
         }
@@ -148,19 +148,19 @@ afterEvaluate {
           }
         }
         issueManagement {
-          url.set("https://github.com/indramahkota/build-logic/issues")
+          url.set("https://github.com/Kt-Kraft/build-logic/issues")
           system.set("GitHub Issues")
         }
         scm {
-          url.set("https://github.com/indramahkota/build-logic/")
-          connection.set("scm:git:git://github.com:indramahkota/build-logic.git")
-          developerConnection.set("scm:git:ssh://git@github.com:indramahkota/build-logic.git")
+          url.set("https://github.com/Kt-Kraft/build-logic/")
+          connection.set("scm:git:git://github.com:Kt-Kraft/build-logic.git")
+          developerConnection.set("scm:git:ssh://git@github.com:Kt-Kraft/build-logic.git")
         }
       }
     }
 
     repositories {
-      maven(url = "https://maven.pkg.github.com/indramahkota/build-logic-public/") {
+      maven(url = "https://maven.pkg.github.com/Kt-Kraft/build-logic-public/") {
         name = "GitHubPackages"
         credentials {
           username = System.getenv("GITHUB_USERNAME")

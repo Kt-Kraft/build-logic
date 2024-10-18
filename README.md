@@ -1,4 +1,12 @@
-# Build Logic for Android Project
+<h1 align="center">Build Logic for Androidd</h1>
+
+<div align="center">
+<a href="https://github.com/Kt-Kraft/build-logic/blob/master/LICENSE"><img src="https://img.shields.io/github/license/Kt-Kraft/build-logic?color=blue" alt="LICENSE"/></a> <a href="https://github.com/Kt-Kraft/build-logic/stargazers"><img src="https://img.shields.io/github/stars/Kt-Kraft/build-logic" alt="GitHub Stars"/></a> <a href="#contributors"><img src="https://img.shields.io/badge/all_contributors-1-orange.svg?style=flat" alt="All Contributors"/></a>
+</div>
+
+<br/>
+
+## 📝 Usage
 
 ```kt
 // Root project settings.gradle.kts
@@ -44,7 +52,6 @@ plugins {
   alias(libs.plugins.convention.compose.app) apply false
   alias(libs.plugins.convention.compose.lib) apply false
   alias(libs.plugins.convention.publishing) apply false
-
   alias(libs.plugins.convention.android.config)
   alias(libs.plugins.convention.publish.config)
 }
@@ -63,7 +70,7 @@ convention {
     pom {
       setGitHubProject {
         owner = "indramahkota"
-        repository = "android-exploration"
+        repository = "easy-android"
       }
 
       licenses {
