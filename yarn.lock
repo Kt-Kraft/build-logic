@@ -316,6 +316,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"build-logic@workspace:.":
+  version: 0.0.0-use.local
+  resolution: "build-logic@workspace:."
+  dependencies:
+    "@commitlint/cli": "npm:^19.5.0"
+    "@commitlint/config-conventional": "npm:^19.5.0"
+    "@evilmartians/lefthook": "npm:^1.5.0"
+  languageName: unknown
+  linkType: soft
+
 "callsites@npm:^3.0.0":
   version: 3.1.0
   resolution: "callsites@npm:3.1.0"
@@ -671,16 +681,6 @@ __metadata:
   checksum: 10c0/89bc68080cd0a0e276d4b5ab1b79cacd68f562467008d176dc23e16e97d4efec9e21741d92ba5087a8433526a45a7e6a9d5ef25408696c402ca1cfbc01a90bf0
   languageName: node
   linkType: hard
-
-"ktor-api@workspace:.":
-  version: 0.0.0-use.local
-  resolution: "ktor-api@workspace:."
-  dependencies:
-    "@commitlint/cli": "npm:^19.5.0"
-    "@commitlint/config-conventional": "npm:^19.5.0"
-    "@evilmartians/lefthook": "npm:^1.5.0"
-  languageName: unknown
-  linkType: soft
 
 "lines-and-columns@npm:^1.1.6":
   version: 1.2.4

@@ -12,7 +12,7 @@
 // Root project settings.gradle.kts
 pluginManagement {
   repositories {
-    maven(url = "https://maven.pkg.github.com/indramahkota/build-logic/") {
+    maven(url = "https://maven.pkg.github.com/Kt-Kraft/build-logic/") {
       name = "GitHubPackages"
       credentials {
         username = providers.gradleProperty("github.username").orNull
@@ -24,22 +24,6 @@ pluginManagement {
     google()
     mavenCentral()
     gradlePluginPortal()
-  }
-}
-
-dependencyResolutionManagement {
-  repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
-  repositories {
-    maven(url = "https://maven.pkg.github.com/indramahkota/version-catalog/") {
-      credentials {
-        username = providers.gradleProperty("github.username").orNull
-          ?: System.getenv("GITHUB_USERNAME")
-        password = providers.gradleProperty("github.token").orNull
-          ?: System.getenv("GITHUB_TOKEN")
-      }
-    }
-    google()
-    mavenCentral()
   }
 }
 ```
@@ -60,7 +44,7 @@ plugins {
 convention {
   // Set android config for all subprojects
   android {
-    minSdk.set(23)
+    minSdk.set(26)
     targetSdk.set(34)
     compileSdk.set(34)
   }

@@ -12,11 +12,11 @@ plugins {
 // https://kotlinlang.org/docs/gradle-configure-project.html#apply-the-plugin
 // Min - Max without deprecated warning
 // Kotlin version   | Gradle Version    | AGP version
-// 1.9.0            | 6.8.3 – 7.6.0     | 4.2.2 – 7.4.0
+// 2.0.20           | 6.8.3 – 8.8       | 7.1.3 – 8.5.2
 
 // https://developer.android.com/build/releases/gradle-plugin
 // AGP version      |	Minimum required Gradle version
-// 8.2              |	8.1
+// 8.5              |	8.7
 
 dependencies {
   implementation(libs.android.r8)
@@ -127,7 +127,7 @@ gradlePlugin {
  * -----------------------------------
  * */
 group = "convention"
-version = "0.5.2"
+version = "1.0.0"
 
 afterEvaluate {
   publishing {

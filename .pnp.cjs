@@ -11,14 +11,14 @@ const RAW_RUNTIME_STATE =
   ],\
   "dependencyTreeRoots": [\
     {\
-      "name": "ktor-api",\
+      "name": "build-logic",\
       "reference": "workspace:."\
     }\
   ],\
   "enableTopLevelFallback": true,\
   "ignorePatternData": "(^(?:\\\\.yarn\\\\/sdks(?:\\\\/(?!\\\\.{1,2}(?:\\\\/|$))(?:(?:(?!(?:^|\\\\/)\\\\.{1,2}(?:\\\\/|$)).)*?)|$))$)",\
   "fallbackExclusionList": [\
-    ["ktor-api", ["workspace:."]]\
+    ["build-logic", ["workspace:."]]\
   ],\
   "fallbackPool": [\
   ],\
@@ -372,6 +372,18 @@ const RAW_RUNTIME_STATE =
           ["array-ify", "npm:1.0.0"]\
         ],\
         "linkType": "HARD"\
+      }]\
+    ]],\
+    ["build-logic", [\
+      ["workspace:.", {\
+        "packageLocation": "./",\
+        "packageDependencies": [\
+          ["build-logic", "workspace:."],\
+          ["@commitlint/cli", "npm:19.5.0"],\
+          ["@commitlint/config-conventional", "npm:19.5.0"],\
+          ["@evilmartians/lefthook", "npm:1.7.21"]\
+        ],\
+        "linkType": "SOFT"\
       }]\
     ]],\
     ["callsites", [\
@@ -801,18 +813,6 @@ const RAW_RUNTIME_STATE =
           ["jsonparse", "npm:1.3.1"]\
         ],\
         "linkType": "HARD"\
-      }]\
-    ]],\
-    ["ktor-api", [\
-      ["workspace:.", {\
-        "packageLocation": "./",\
-        "packageDependencies": [\
-          ["ktor-api", "workspace:."],\
-          ["@commitlint/cli", "npm:19.5.0"],\
-          ["@commitlint/config-conventional", "npm:19.5.0"],\
-          ["@evilmartians/lefthook", "npm:1.7.21"]\
-        ],\
-        "linkType": "SOFT"\
       }]\
     ]],\
     ["lines-and-columns", [\
