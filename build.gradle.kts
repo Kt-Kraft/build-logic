@@ -165,7 +165,7 @@ afterEvaluate {
     }
 
     repositories {
-      maven(url = "https://maven.pkg.github.com/Kt-Kraft/build-logic-public/") {
+      maven(url = "https://maven.pkg.github.com/Kt-Kraft/build-logic/") {
         name = "GitHubPackages"
         credentials {
           username = System.getenv("GITHUB_USERNAME")
