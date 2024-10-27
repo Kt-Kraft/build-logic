@@ -31,6 +31,7 @@ dependencies {
   implementation(libs.google.guava)
   implementation(libs.secret.gradle.plugin)
   implementation(libs.kase.change)
+  testImplementation(kotlin("test"))
 }
 
 kotlin {
@@ -45,6 +46,10 @@ kotlin {
       ),
     )
   }
+}
+
+tasks.test {
+  useJUnitPlatform()
 }
 
 fun isNonStable(version: String): Boolean {

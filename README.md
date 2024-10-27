@@ -1,15 +1,39 @@
-<h1 align="center">Build Logic for Androidd</h1>
+<h1 align="center">Build Logic for Android</h1>
 
 <div align="center">
-<a href="https://github.com/Kt-Kraft/build-logic/blob/master/LICENSE"><img src="https://img.shields.io/github/license/Kt-Kraft/build-logic?color=blue" alt="LICENSE"/></a> <a href="https://github.com/Kt-Kraft/build-logic/stargazers"><img src="https://img.shields.io/github/stars/Kt-Kraft/build-logic" alt="GitHub Stars"/></a> <a href="#contributors"><img src="https://img.shields.io/badge/all_contributors-1-orange.svg?style=flat" alt="All Contributors"/></a>
+  <a href="https://github.com/Kt-Kraft/build-logic/blob/master/LICENSE"><img src="https://img.shields.io/github/license/Kt-Kraft/build-logic?color=blue" alt="LICENSE"/></a>
+  <a href="https://github.com/Kt-Kraft/build-logic/stargazers"><img src="https://img.shields.io/github/stars/Kt-Kraft/build-logic" alt="GitHub Stars"/></a>
+  <a href="#contributors"><img src="https://img.shields.io/badge/all_contributors-1-orange.svg?style=flat" alt="All Contributors"/></a>
 </div>
 
 <br/>
 
-## 📝 Usage
+<p align="center">
+  Streamline your Android project configurations with reusable build logic setups. Designed for multi-module projects, this setup reduces boilerplate, standardizes configurations, and simplifies publishing with Gradle.
+</p>
 
-```kt
-// Root project settings.gradle.kts
+<br/>
+
+---
+
+## 🚀 Overview
+
+This repository provides a centralized setup for Android build configurations. The conventions include:
+- **Standardized build configurations** across Android libraries, apps, and Compose modules.
+- **Automatic subproject plugin application** based on project type (e.g., app, library).
+- **Streamlined publishing settings** with GitHub Packages.
+
+---
+
+## 📝 Setup & Usage
+
+To integrate this build logic into your Android project, follow the steps below.
+
+### Step 1: Configure `settings.gradle.kts`
+
+Add the custom plugin repository to your root project `settings.gradle.kts`:
+
+```kotlin
 pluginManagement {
   repositories {
     maven(url = "https://maven.pkg.github.com/Kt-Kraft/build-logic/") {
@@ -28,8 +52,12 @@ pluginManagement {
 }
 ```
 
-```kt
-// Root project build.gradle.kts
+### Step 2: Update `build.gradle.kts` in Root Project
+
+Add plugin aliases and configurations in your root project’s `build.gradle.kts`:
+
+
+```kotlin
 plugins {
   alias(libs.plugins.convention.android.app) apply false
   alias(libs.plugins.convention.android.lib) apply false
@@ -42,14 +70,12 @@ plugins {
 
 // Initial configuration for subprojects
 convention {
-  // Set android config for all subprojects
   android {
     minSdk.set(26)
     targetSdk.set(34)
     compileSdk.set(34)
   }
 
-  // Set maven pom for all subprojects
   publishing {
     pom {
       setGitHubProject {
@@ -57,9 +83,7 @@ convention {
         repository = "easy-android"
       }
 
-      licenses {
-        mit()
-      }
+      licenses { mit() }
 
       developers {
         developer(
@@ -71,23 +95,23 @@ convention {
     }
   }
 }
-
 ```
 
-```kt
-// In submodules project build.gradle.kts
+### Step 3: Apply Plugins in Submodules
+
+In your submodule `build.gradle.kts` files, apply the necessary plugins:
+
+
+```kotlin
 plugins {
-  // Automatically apply android plugin
   alias(libs.plugins.convention.compose.app)
   alias(libs.plugins.secret.gradle.plugin)
 }
 
-//or
+// or
 
 plugins {
-  // Automatically apply android plugin
   alias(libs.plugins.convention.android.lib)
   alias(libs.plugins.convention.publishing)
 }
-
 ```
