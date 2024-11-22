@@ -15,7 +15,6 @@ internal fun Project.configureCompose(
       compose = true
     }
   }
-
   extensions.configure<ComposeCompilerGradlePluginExtension> {
     reportsDestination.set(reportsDir.dir("compose-reports"))
     metricsDestination.set(reportsDir.dir("compose-metrics"))

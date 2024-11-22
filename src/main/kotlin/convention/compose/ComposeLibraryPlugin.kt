@@ -23,7 +23,6 @@ public class ComposeLibraryPlugin @Inject constructor(
       pluginId = PLUGIN_ID_CONVENTION_ANDROID_LIB,
       errorMessage = "Convention Android Library Gradle Plugin not found.",
     )
-
     applyPlugins(PLUGIN_ID_CONVENTION_ANDROID_LIB, PLUGIN_ID_KOTLIN_COMPOSE_COMPILER)
 
     configureCommonComposeAndroid()

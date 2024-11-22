@@ -9,11 +9,9 @@ import org.gradle.api.tasks.TaskAction
 /** Adds `android:debuggable="true"` to the manifest. */
 public abstract class MakeDebuggableTask : DefaultTask() {
 
-  /** The merged manifest file. */
   @get:InputFile
   public abstract val mergedManifest: RegularFileProperty
 
-  /** Resulting manifest with debuggable flag set to true. */
   @get:OutputFile
   public abstract val debuggableManifest: RegularFileProperty
 

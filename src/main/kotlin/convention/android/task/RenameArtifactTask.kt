@@ -17,38 +17,49 @@ import org.gradle.api.tasks.InputFile
 import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.TaskAction
 import org.w3c.dom.Document
-import org.w3c.dom.Element
 
-private fun Document.createNewName(extension: String, variant: String): String {
-  val versionCode = documentElement.getAttribute("android:versionCode")
-  val versionName = documentElement.getAttribute("android:versionName")
-  val appLabel = documentElement.getElementsByTagName("application")
-    .let { it.item(0) as Element }.getAttribute("android:label")
-    .replace(" ", "-")
-
-  val formattedDateTime = LocalDateTime.now(ZoneId.systemDefault())
-    .format(DateTimeFormatter.ofPattern("ddMMMyyyy'T'HH.mm", Locale.getDefault()))
-  return "$appLabel-V$versionName-$versionCode-$formattedDateTime-${variant.uppercase()}.$extension"
+private fun Document.getAppName(): String? {
+  val stringElements = documentElement.getElementsByTagName("string")
+  return (0 until stringElements.length).firstNotNullOfOrNull { index ->
+    val node = stringElements.item(index)
+    val nameAttribute = node?.attributes?.getNamedItem("name")?.nodeValue
+    node?.textContent.takeIf { nameAttribute == "app_name" && !it.isNullOrBlank() }
+  }
 }
 
-/**
- * This abstract class represents a task for renaming Android App Bundles (AABs).
- * It extends the DefaultTask class provided by Gradle.
- *
- * @property inputBundleDirectory The directory containing the input bundle file. This is an abstract property that must be implemented by subclasses.
- * @property inputManifestDirectory The directory containing the input Android manifest file. This is an abstract property that must be implemented by subclasses.
- */
+private fun Document.createSuffix(variant: String, extension: String): String {
+  val versionCode = documentElement.getAttribute("android:versionCode")
+  val versionName = documentElement.getAttribute("android:versionName")
+  val formattedDateTime = LocalDateTime.now(ZoneId.systemDefault())
+    .format(DateTimeFormatter.ofPattern("ddMMMyyyy'T'HH.mm", Locale.getDefault()))
+  return "V$versionName-$versionCode-$formattedDateTime-${variant.uppercase()}.$extension"
+}
+
+private fun createNewAppName(
+  manifestDirectory: File,
+  stringsDirectory: File,
+  variantName: String,
+  extension: String,
+): String {
+  val manifest = manifestDirectory.readText()
+  val manifestDocument = DocumentBuilderFactory.newInstance().newDocumentBuilder()
+    .parse(manifest.byteInputStream())
+  val stringsFile = stringsDirectory.readText()
+  val stringsDocument = DocumentBuilderFactory.newInstance().newDocumentBuilder()
+    .parse(stringsFile.byteInputStream())
+  val appName = stringsDocument.getAppName().orEmpty().replace(" ", "-")
+  val suffix = manifestDocument.createSuffix(variant = variantName, extension = extension)
+  return "$appName-$suffix"
+}
+
 public abstract class RenameBundleTask : DefaultTask() {
 
-  /**
-   * The directory containing the input bundle file.
-   */
   @get:InputFile
   public abstract val inputBundleDirectory: RegularFileProperty
 
-  /**
-   * The directory containing the input Android manifest file.
-   */
+  @get:InputFile
+  public abstract val inputStringsDirectory: RegularFileProperty
+
   @get:InputFile
   public abstract val inputManifestDirectory: RegularFileProperty
 
@@ -57,48 +68,35 @@ public abstract class RenameBundleTask : DefaultTask() {
 
   @TaskAction
   internal fun doTaskAction() {
-    val manifest = inputManifestDirectory.get().asFile.readText()
-    val document = DocumentBuilderFactory.newInstance().newDocumentBuilder()
-      .parse(manifest.byteInputStream())
-    val applicationName = document.createNewName(extension = "aab", variant = variantName.get())
-
+    val newAppName = createNewAppName(
+      inputManifestDirectory.get().asFile,
+      inputStringsDirectory.get().asFile,
+      variantName.get(),
+      "aab"
+    )
     try {
       val bundleFile = inputBundleDirectory.get().asFile
-      val newApkFile = bundleFile.copyTo(File(bundleFile.parent, "deliverable/${applicationName}"), overwrite = true)
+      val newApkFile = bundleFile.copyTo(File(bundleFile.parent, "deliverable/$newAppName"), overwrite = true)
       val renamedOutput = File(bundleFile.parent, "deliverable-aab.txt")
       renamedOutput.writeText(newApkFile.toPath().toString())
-      println("APK renaming successful: $applicationName")
+      println("APK renaming successful: $newAppName")
     } catch (_: Exception) {
       println("APK renaming failed.")
     }
   }
 }
 
-/**
- * This abstract class represents a task for renaming Android APKs.
- * It extends the DefaultTask class provided by Gradle.
- *
- * @property mBuiltArtifactsLoader The loader for built artifacts. This is an abstract property that must be implemented by subclasses.
- * @property inputApkDirectory The directory containing the input APK file. This is an abstract property that must be implemented by subclasses.
- * @property inputManifestDirectory The directory containing the input Android manifest file. This is an abstract property that must be implemented by subclasses.
- */
 public abstract class RenameApkTask : DefaultTask() {
 
-  /**
-   * The loader for built artifacts.
-   */
   @get:Internal
   public abstract val mBuiltArtifactsLoader: Property<BuiltArtifactsLoader>
 
-  /**
-   * The directory containing the input APK file.
-   */
   @get:InputDirectory
   public abstract val inputApkDirectory: DirectoryProperty
 
-  /**
-   * The directory containing the input Android manifest file.
-   */
+  @get:InputFile
+  public abstract val inputStringsDirectory: RegularFileProperty
+
   @get:InputFile
   public abstract val inputManifestDirectory: RegularFileProperty
 
@@ -118,17 +116,19 @@ public abstract class RenameApkTask : DefaultTask() {
       "Expected one APK!"
     }
 
-    val manifest = inputManifestDirectory.get().asFile.readText()
-    val document = DocumentBuilderFactory.newInstance().newDocumentBuilder()
-      .parse(manifest.byteInputStream())
-    val applicationName = document.createNewName(extension = "apk", variant = variantName.get())
+    val newAppName = createNewAppName(
+      inputManifestDirectory.get().asFile,
+      inputStringsDirectory.get().asFile,
+      variantName.get(),
+      "apk"
+    )
 
     try {
       val apkFile = File(builtArtifacts.elements.single().outputFile)
-      val newApkFile = apkFile.copyTo(File(apkFile.parent, "deliverable/${applicationName}"), overwrite = true)
+      val newApkFile = apkFile.copyTo(File(apkFile.parent, "deliverable/$newAppName"), overwrite = true)
       val renamedOutput = File(apkFile.parent, "deliverable-apk.txt")
       renamedOutput.writeText(newApkFile.toPath().toString())
-      println("APK renaming successful: $applicationName")
+      println("APK renaming successful: $newAppName")
     } catch (_: Exception) {
       println("APK renaming failed.")
     }

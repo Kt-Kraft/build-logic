@@ -12,29 +12,11 @@ import org.gradle.kotlin.dsl.withType
 import org.jetbrains.kotlin.gradle.dsl.KotlinAndroidProjectExtension
 import org.jetbrains.kotlin.gradle.plugin.AbstractKotlinAndroidPluginWrapper
 
-/**
- * This abstract class represents the Base Android Plugin.
- * It extends the BaseConventionPlugin class and is used to configure the project.
- *
- * @property androidOptionsExtension The Android options extension used in the project. It is a protected property and is accessed via a getter.
- */
 public abstract class BaseAndroidPlugin : BaseConventionPlugin() {
 
-  /**
-   * This is a getter for the androidOptionsExtension property.
-   * It retrieves the AndroidOptionsExtension instance from the conventionExtension's extensions.
-   *
-   * @return The AndroidOptionsExtension instance.
-   */
   protected val androidOptionsExtension: AndroidOptionsExtension
     get() = conventionExtension.extensions.androidOptions
 
-  /**
-   * This function is used to configure the common Android settings for the project.
-   * It configures the common Kotlin settings and the common settings for the Android project.
-   *
-   * @receiver The Project instance on which the function is invoked.
-   */
   @InternalPluginApi
   protected fun Project.configureCommonAndroid() {
     configureCommon(androidOptionsExtension, conventionExtension.jvmTarget)

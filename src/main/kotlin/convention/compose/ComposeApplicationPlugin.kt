@@ -23,7 +23,6 @@ public class ComposeApplicationPlugin @Inject constructor(
       pluginId = PLUGIN_ID_CONVENTION_ANDROID_APP,
       errorMessage = "Convention Android Application Gradle Plugin not found.",
     )
-
     applyPlugins(PLUGIN_ID_CONVENTION_ANDROID_APP, PLUGIN_ID_KOTLIN_COMPOSE_COMPILER)
 
     configureCommonComposeAndroid()

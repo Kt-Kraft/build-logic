@@ -22,29 +22,17 @@ import convention.common.constant.SECRET_GRADLEW_PLUGIN
 import convention.common.internal.applyPlugins
 import convention.common.internal.requiredPlugin
 import convention.common.utils.loadPropertiesFile
+import javax.inject.Inject
 import net.pearx.kasechange.toPascalCase
 import org.gradle.api.Project
 import org.gradle.api.internal.plugins.PluginRegistry
 import org.gradle.kotlin.dsl.configure
 import org.gradle.kotlin.dsl.register
-import javax.inject.Inject
 
-/**
- * This class represents the Android Application Plugin.
- * It extends the BaseAndroidPlugin class and is used to configure the project.
- *
- * @property pluginRegistry The registry of plugins used in the project. This is injected in the constructor.
- * @constructor Creates an instance of the AndroidApplicationPlugin class.
- */
 public class AndroidApplicationPlugin @Inject constructor(
   private val pluginRegistry: PluginRegistry,
 ) : BaseAndroidPlugin() {
 
-  /**
-   * This function is used to configure the project.
-   * It checks for the required plugins and applies them to the project.
-   * It also configures the common Android settings, application Android settings, secrets, and finalizes the application Android settings.
-   */
   @InternalPluginApi
   override fun Project.configure() {
     pluginRegistry.requiredPlugin(
@@ -55,7 +43,6 @@ public class AndroidApplicationPlugin @Inject constructor(
       pluginId = SECRET_GRADLEW_PLUGIN,
       errorMessage = "Secret Gradle Plugin not found.",
     )
-
     applyPlugins(PLUGIN_ID_ANDROID_APPLICATION, SECRET_GRADLEW_PLUGIN)
 
     configureCommonAndroid()
@@ -70,10 +57,14 @@ private fun Project.configureApplicationAndroid(androidOptions: AndroidOptionsEx
     val debugSignName = "DebugSignConfig"
     val releaseSignName = "ReleaseSignConfig"
 
-    val properties = kotlin.runCatching {
-      loadPropertiesFile("../keystore.properties")
+    val properties = runCatching {
+      loadPropertiesFile(
+        rootDir.resolve("keystore.properties")
+      )
     }.getOrElse {
-      loadPropertiesFile("../keystore.defaults.properties")
+      loadPropertiesFile(
+        rootDir.resolve("keystore.defaults.properties")
+      )
     }
 
     val debugKeystoreConfig = properties.loadKeystoreConfig("DEBUG")
@@ -175,6 +166,7 @@ private fun Project.finalizeApplicationAndroid() =
       val apk = variant.artifacts.get(SingleArtifact.APK)
       val bundle = variant.artifacts.get(SingleArtifact.BUNDLE)
       val manifest = variant.artifacts.get(SingleArtifact.MERGED_MANIFEST)
+      val stringsXml = layout.projectDirectory.asFile.resolve("src/main/res/values/strings.xml")
 
       tasks.register(
         "make${name.toPascalCase()}${variant.name.toPascalCase()}RenamedApk",
@@ -186,6 +178,7 @@ private fun Project.finalizeApplicationAndroid() =
         mBuiltArtifactsLoader.set(loader)
         inputApkDirectory.set(apk)
         inputManifestDirectory.set(manifest)
+        inputStringsDirectory.set(stringsXml)
         variantName.set(variant.name)
       }
 
@@ -198,6 +191,7 @@ private fun Project.finalizeApplicationAndroid() =
           "Rename project: ${this@finalizeApplicationAndroid.name.toPascalCase()} for variant: ${variant.name.toPascalCase()} Bundle"
         inputBundleDirectory.set(bundle)
         inputManifestDirectory.set(manifest)
+        inputStringsDirectory.set(stringsXml)
         variantName.set(variant.name)
       }
     }

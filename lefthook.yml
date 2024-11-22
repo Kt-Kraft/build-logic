@@ -1,5 +1,0 @@
-commit-msg:
-  parallel: true
-  commands:
-    commitlint:
-      run: yarn commitlint --edit $1
