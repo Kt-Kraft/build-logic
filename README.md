@@ -9,7 +9,7 @@
 <br/>
 
 <p align="center">
-  Streamline your Android project configurations with reusable build logic setups. Designed for multi-module projects, this setup reduces boilerplate, standardizes configurations, and simplifies publishing with Gradle.
+  Simplify your Android project configurations with reusable build logic setups. Ideal for multi-module projects, this setup reduces boilerplate, standardizes configurations, supports commitlint, and streamlines publishing with Gradle.
 </p>
 
 <br/>
@@ -18,10 +18,10 @@
 
 ## 🚀 Overview
 
-This repository provides a centralized setup for Android build configurations. The conventions include:
-- **Standardized build configurations** across Android libraries, apps, and Compose modules.
-- **Automatic subproject plugin application** based on project type (e.g., app, library).
-- **Streamlined publishing settings** with GitHub Packages.
+This repository offers a centralized setup for Android build configurations, including the following conventions:
+- **Standardized Build Configurations**: Predefined configurations for App, Library, Jetpack Compose modules.
+- **Conventional Commit Linting**: Integrated support for enforcing conventional commit messages.
+- **Streamlined Publishing Settings**: Simplified configuration for publishing artifacts to GitHub Packages.
 
 ---
 
@@ -66,10 +66,12 @@ plugins {
   alias(libs.plugins.convention.publishing) apply false
   alias(libs.plugins.convention.android.config)
   alias(libs.plugins.convention.publish.config)
+  alias(libs.plugins.convention.commitlint)
 }
 
 // Initial configuration for subprojects
 convention {
+
   android {
     minSdk.set(26)
     targetSdk.set(34)
