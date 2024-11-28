@@ -4,6 +4,7 @@ android-tools-common = "31.7.2"
 benManes = "0.51.0"
 catalogUpdate = "0.8.5"
 guava = "23.0"
+indramahkota = "1.2.0"
 jgit = "7.0.0.202409031743-r"
 kase-change = "1.4.1"
 kotlin = "2.0.21"
@@ -27,5 +28,8 @@ secret-gradle-plugin = { module = "com.google.android.libraries.mapsplatform.sec
 
 [plugins]
 ben-manes-versions = { id = "com.github.ben-manes.versions", version.ref = "benManes" }
+convention-commitlint = { id = "commitlint", version.ref = "indramahkota" }
+convention-publish-config = { id = "publish.config", version.ref = "indramahkota" }
+convention-publishing = { id = "publish", version.ref = "indramahkota" }
 dokka = { id = "org.jetbrains.dokka", version.ref = "kotlin-dokka" }
 version-catalog-update = { id = "nl.littlerobots.version-catalog-update", version.ref = "catalogUpdate" }

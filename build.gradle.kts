@@ -1,4 +1,7 @@
 import com.github.benmanes.gradle.versions.updates.DependencyUpdatesTask
+import convention.publishing.dsl.developer
+import convention.publishing.dsl.mit
+import convention.publishing.dsl.setGitHubProject
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
@@ -8,6 +11,9 @@ plugins {
   alias(libs.plugins.ben.manes.versions)
   alias(libs.plugins.version.catalog.update)
   alias(libs.plugins.dokka)
+  alias(libs.plugins.convention.publish.config)
+  alias(libs.plugins.convention.publishing)
+  alias(libs.plugins.convention.commitlint)
 }
 
 // https://kotlinlang.org/docs/gradle-configure-project.html#apply-the-plugin
@@ -40,12 +46,6 @@ kotlin {
   jvmToolchain(17)
   compilerOptions {
     jvmTarget.set(JvmTarget.JVM_17)
-    freeCompilerArgs.addAll(
-      listOf(
-        "-opt-in=kotlin.Experimental",
-        "-opt-in=kotlin.RequiresOptIn",
-      ),
-    )
   }
 }
 
@@ -143,42 +143,29 @@ gradlePlugin {
 group = "convention"
 version = "1.2.0"
 
-afterEvaluate {
-
-  signing {
-    useGpgCmd()
-    sign(publishing.publications)
-  }
-
+convention {
   publishing {
-    publications.withType<MavenPublication>().all {
-      pom {
-        licenses {
-          license {
-            name.set("MIT License")
-            url.set("https://github.com/Kt-Kraft/build-logic/blob/main/LICENSE")
-            distribution.set("repo")
-          }
-        }
-        developers {
-          developer {
-            id.set("indramahkota")
-            name.set("Indra Mahkota")
-            email.set("indramahkota1@gmail.com")
-          }
-        }
-        issueManagement {
-          url.set("https://github.com/Kt-Kraft/build-logic/issues")
-          system.set("GitHub Issues")
-        }
-        scm {
-          url.set("https://github.com/Kt-Kraft/build-logic/")
-          connection.set("scm:git:git://github.com:Kt-Kraft/build-logic.git")
-          developerConnection.set("scm:git:ssh://git@github.com:Kt-Kraft/build-logic.git")
-        }
+    pom {
+      setGitHubProject {
+        owner = "Kt-Kraft"
+        repository = "build-logic"
+      }
+
+      licenses { mit() }
+
+      developers {
+        developer(
+          id = "indramahkota",
+          name = "Indra Mahkota",
+          email = "indramahkota1@gmail.com",
+        )
       }
     }
+  }
+}
 
+afterEvaluate {
+  publishing {
     repositories {
       maven(url = "https://maven.pkg.github.com/Kt-Kraft/build-logic/") {
         name = "GitHubPackages"
@@ -188,5 +175,10 @@ afterEvaluate {
         }
       }
     }
+  }
+
+  signing {
+    useGpgCmd()
+    sign(publishing.publications)
   }
 }
