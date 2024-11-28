@@ -4,6 +4,7 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 plugins {
   `kotlin-dsl`
   `maven-publish`
+  signing
   alias(libs.plugins.ben.manes.versions)
   alias(libs.plugins.version.catalog.update)
   alias(libs.plugins.dokka)
@@ -123,6 +124,14 @@ gradlePlugin {
       description = displayName
       implementationClass = "convention.publishing.PublishPlugin"
     }
+
+    // CommitLint
+    create("commit-lint") {
+      id = "commitlint"
+      displayName = "CommitLint Plugin"
+      description = displayName
+      implementationClass = "convention.commitlint.CommitLintPlugin"
+    }
   }
 }
 
@@ -132,9 +141,15 @@ gradlePlugin {
  * -----------------------------------
  * */
 group = "convention"
-version = "1.1.0"
+version = "1.2.0"
 
 afterEvaluate {
+
+  signing {
+    useGpgCmd()
+    sign(publishing.publications)
+  }
+
   publishing {
     publications.withType<MavenPublication>().all {
       pom {

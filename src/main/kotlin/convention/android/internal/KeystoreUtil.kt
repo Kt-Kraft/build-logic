@@ -9,10 +9,11 @@ internal data class KeystoreConfig(
   val storePassword: String
 )
 
+internal fun Properties.getRequiredProperty(propertyName: String): String {
+  return getProperty(propertyName) ?: error("$propertyName is required in keystore.properties")
+}
+
 internal fun Properties.loadKeystoreConfig(prefix: String): KeystoreConfig {
-  fun getRequiredProperty(propertyName: String): String {
-    return getProperty(propertyName) ?: error("$propertyName is required in keystore.properties")
-  }
   return KeystoreConfig(
     keyAlias = getRequiredProperty("${prefix}_KEY_ALIAS"),
     keyPassword = getRequiredProperty("${prefix}_KEY_PASSWORD"),

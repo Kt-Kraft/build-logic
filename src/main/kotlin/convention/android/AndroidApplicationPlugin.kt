@@ -5,7 +5,6 @@ import com.android.build.api.dsl.ApplicationExtension
 import com.android.build.api.variant.ApplicationAndroidComponentsExtension
 import com.google.android.libraries.mapsplatform.secrets_gradle_plugin.SecretsPluginExtension
 import convention.android.dsl.BUILD_TYPE_DEBUG
-import convention.android.dsl.BUILD_TYPE_QA
 import convention.android.dsl.BUILD_TYPE_RELEASE
 import convention.android.dsl.BUILD_TYPE_STAGING
 import convention.android.dsl.BuildTypeSuffix
@@ -119,23 +118,11 @@ private fun Project.configureApplicationAndroid(androidOptions: AndroidOptionsEx
         signingConfig = signingConfigs.findByName(releaseSignName)
       }
 
-      // Development build with performance optimized
-      register(BUILD_TYPE_QA) {
-        initWith(getByName(BUILD_TYPE_RELEASE))
-        applicationIdSuffix = BuildTypeSuffix.QA.suffix
-        matchingFallbacks += listOf(BUILD_TYPE_DEBUG, BUILD_TYPE_RELEASE)
-        signingConfig = signingConfigs.findByName(debugSignName)
-
-        // We can not use isDebuggable = true here, so set DEBUG field ourselves.
-        // See `makeDebuggable` for more information
-        buildConfigField(type = "boolean", name = "DEBUG", value = "true")
-      }
-
       // Production build with release app id, but able to debug
       register(BUILD_TYPE_STAGING) {
         initWith(getByName(BUILD_TYPE_RELEASE))
         applicationIdSuffix = BuildTypeSuffix.STAGING.suffix
-        matchingFallbacks += listOf(BUILD_TYPE_DEBUG, BUILD_TYPE_RELEASE)
+        matchingFallbacks += listOf(BUILD_TYPE_RELEASE)
 
         // We can not use isDebuggable = true here, so set DEBUG field ourselves.
         // See `makeDebuggable` for more information
