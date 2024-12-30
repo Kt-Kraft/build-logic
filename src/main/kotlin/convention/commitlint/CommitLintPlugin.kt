@@ -11,7 +11,6 @@ public open class CommitLintPlugin : BaseConventionPlugin() {
 
   @InternalPluginApi
   override fun Project.configure() {
-
     val extension = createExtension(
       name = CommitLintExtension.NAME,
       publicType = CommitLintExtension::class,

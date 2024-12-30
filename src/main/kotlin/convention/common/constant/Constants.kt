@@ -6,6 +6,9 @@ import convention.common.annotation.InternalPluginApi
 public const val PLUGIN_ID_JAVA: String = "java"
 
 @InternalPluginApi
+public const val PLUGIN_ID_KOTLIN_MULTIPLATFORM: String = "org.jetbrains.kotlin.multiplatform"
+
+@InternalPluginApi
 public const val PLUGIN_ID_KOTLIN_ANDROID: String = "org.jetbrains.kotlin.android"
 
 @InternalPluginApi

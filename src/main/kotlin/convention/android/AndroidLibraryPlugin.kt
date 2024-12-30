@@ -26,7 +26,6 @@ public class AndroidLibraryPlugin @Inject constructor(
       pluginId = PLUGIN_ID_ANDROID_LIBRARY,
       errorMessage = "Android Library Gradle Plugin not found.",
     )
-
     applyPlugins(PLUGIN_ID_ANDROID_LIBRARY)
 
     configureCommonAndroid()

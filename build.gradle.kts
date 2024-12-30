@@ -29,10 +29,7 @@ dependencies {
   implementation(libs.android.r8)
   implementation(libs.android.tools.build)
   implementation(libs.android.tools.common)
-  implementation(libs.android.application.gradle.plugin)
-  implementation(libs.android.library.gradle.plugin)
   implementation(libs.kotlin.gradle.plugin)
-  implementation(libs.kotlin.android.gradle.plugin)
   implementation(libs.compose.compiler.gradle.plugin)
   implementation(libs.jgit)
   implementation(libs.google.guava)
@@ -111,6 +108,20 @@ gradlePlugin {
       implementationClass = "convention.compose.ComposeLibraryPlugin"
     }
 
+    // Multiplatform
+    create("multiplatform-config") {
+      id = "multiplatform.config"
+      displayName = "Multiplatform Config Plugin"
+      description = displayName
+      implementationClass = "convention.multiplatform.MultiplatformConfigPlugin"
+    }
+    create("multiplatform") {
+      id = "multiplatform"
+      displayName = "Multiplatform Plugin"
+      description = displayName
+      implementationClass = "convention.multiplatform.MultiplatformPlugin"
+    }
+
     // Publishing
     create("publish-config") {
       id = "publish.config"
@@ -141,7 +152,7 @@ gradlePlugin {
  * -----------------------------------
  * */
 group = "convention"
-version = "1.2.0"
+version = "1.3.0"
 
 convention {
   publishing {

@@ -4,6 +4,7 @@ import com.android.build.api.dsl.CommonExtension
 import convention.android.internal.android
 import convention.common.BaseConventionPlugin
 import convention.common.annotation.InternalPluginApi
+import convention.common.utils.Config
 import org.gradle.api.JavaVersion
 import org.gradle.api.Project
 import org.gradle.api.provider.Provider
@@ -19,7 +20,7 @@ public abstract class BaseAndroidPlugin : BaseConventionPlugin() {
 
   @InternalPluginApi
   protected fun Project.configureCommonAndroid() {
-    configureCommon(androidOptionsExtension, conventionExtension.jvmTarget)
+    configureCommon(androidOptionsExtension, conventionExtension.javaVersion)
     configureKotlin()
   }
 }
@@ -45,14 +46,9 @@ private fun Project.configureKotlin() {
   plugins.withType<AbstractKotlinAndroidPluginWrapper> {
     configure<KotlinAndroidProjectExtension> {
       compilerOptions {
-        freeCompilerArgs.addAll(
-          listOf(
-            "-opt-in=kotlin.Experimental",
-            "-opt-in=kotlin.RequiresOptIn",
-            "-opt-in=kotlinx.coroutines.FlowPreview",
-            "-opt-in=kotlinx.coroutines.ExperimentalCoroutinesApi",
-          ),
-        )
+        freeCompilerArgs.addAll(Config.compilerArgs)
+        optIn.addAll(Config.optIns)
+        progressiveMode.set(true)
       }
     }
   }

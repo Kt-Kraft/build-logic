@@ -9,14 +9,18 @@ import org.gradle.api.model.ObjectFactory
 import org.gradle.api.plugins.ExtensionAware
 import org.gradle.api.plugins.ExtensionContainer
 import org.gradle.api.provider.Property
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 public abstract class ConventionExtension @Inject constructor(
   layout: ProjectLayout,
   objects: ObjectFactory,
 ) : ExtensionAware, WithDefaults<ConventionExtension> {
 
-  public val jvmTarget: Property<JavaVersion> =
+  public val javaVersion: Property<JavaVersion> =
     objects.property(JavaVersion::class.java).convention(JavaVersion.VERSION_17)
+
+  public val jvmTarget: Property<JvmTarget> =
+    objects.property(JvmTarget::class.java).convention(JvmTarget.JVM_17)
 
   public val configsDir: DirectoryProperty =
     objects.directoryProperty()
@@ -27,6 +31,7 @@ public abstract class ConventionExtension @Inject constructor(
       .convention(layout.buildDirectory.dir(DEFAULT_REPORTS_DIR))
 
   override fun setDefaults(defaults: ConventionExtension) {
+    javaVersion.convention(defaults.javaVersion)
     jvmTarget.convention(defaults.jvmTarget)
     configsDir.convention(defaults.configsDir)
     reportsDir.convention(defaults.reportsDir)

@@ -1,4 +1,4 @@
-<h1 align="center">Build Logic for Android</h1>
+<h1 align="center">Build Logic for Kotlin Multiplatform</h1>
 
 <div align="center">
   <a href="https://github.com/Kt-Kraft/build-logic/blob/master/LICENSE"><img src="https://img.shields.io/github/license/Kt-Kraft/build-logic?color=blue" alt="LICENSE"/></a>
@@ -9,7 +9,7 @@
 <br/>
 
 <p align="center">
-  Simplify your Android project configurations with reusable build logic setups. Ideal for multi-module projects, this setup reduces boilerplate, standardizes configurations, supports commitlint, and streamlines publishing with Gradle.
+  Simplify your Kotlin Multiplatform project configurations with reusable build logic setups. Ideal for multi-module projects, this setup reduces boilerplate, standardizes configurations, supports commitlint, and streamlines publishing with Gradle.
 </p>
 
 <br/>
@@ -18,8 +18,8 @@
 
 ## 🚀 Overview
 
-This repository offers a centralized setup for Android build configurations, including the following conventions:
-- **Standardized Build Configurations**: Predefined configurations for App, Library, Jetpack Compose modules.
+This repository offers a centralized setup for Koltin Multiplatform build configurations, including the following conventions:
+- **Standardized Build Configurations**: Predefined configurations for Kotlin Multiplatform App and Library.
 - **Conventional Commit Linting**: Integrated support for enforcing conventional commit messages.
 - **Streamlined Publishing Settings**: Simplified configuration for publishing artifacts to GitHub Packages.
 
@@ -27,7 +27,7 @@ This repository offers a centralized setup for Android build configurations, inc
 
 ## 📝 Setup & Usage
 
-To integrate this build logic into your Android project, follow the steps below.
+To integrate this build logic into your Kotlin Multiplatform project, follow the steps below.
 
 ### Step 1: Configure `settings.gradle.kts`
 
@@ -59,6 +59,9 @@ Add plugin aliases and configurations in your root project’s `build.gradle.kts
 
 ```kotlin
 plugins {
+  alias(libs.plugins.jetbrains.compose) apply false
+  alias(libs.plugins.kotlin.multiplatform) apply false
+  alias(libs.plugins.convention.multiplatform) apply false
   alias(libs.plugins.convention.android.app) apply false
   alias(libs.plugins.convention.android.lib) apply false
   alias(libs.plugins.convention.compose.app) apply false
@@ -71,18 +74,22 @@ plugins {
 
 // Initial configuration for subprojects
 convention {
+  multiplatform {
+    android.set(true)
+    iOS.set(true)
+  }
 
   android {
-    minSdk.set(26)
-    targetSdk.set(34)
-    compileSdk.set(34)
+    minSdk.set(28)
+    targetSdk.set(35)
+    compileSdk.set(35)
   }
 
   publishing {
     pom {
       setGitHubProject {
-        owner = "indramahkota"
-        repository = "easy-android"
+        owner = "Kt-Kraft"
+        repository = "easy-multiplatform"
       }
 
       licenses { mit() }
