@@ -34,7 +34,7 @@ public open class CommitLintPlugin : BaseConventionPlugin() {
         hooksDir.mkdirs()
       }
 
-      val gitHook = GitHook("commit-msg", "commitLint -Dmsgfile=\\\$1")
+      val gitHook = GitHook("commit-msg", "commitLint -Dorg.gradle.configuration-cache=false -Dmsgfile=\\\$1")
       GitHookWriter(gradlewFile.absolutePath, hooksDir.absolutePath, gitHook).write()
     }
   }
