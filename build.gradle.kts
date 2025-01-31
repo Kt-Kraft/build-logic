@@ -31,7 +31,6 @@ dependencies {
   implementation(libs.kotlin.gradle.plugin)
   implementation(libs.compose.compiler.gradle.plugin)
   implementation(libs.jgit)
-  implementation(libs.google.guava)
   implementation(libs.secret.gradle.plugin)
   implementation(libs.kase.change)
   testImplementation(kotlin("test"))
@@ -151,7 +150,7 @@ gradlePlugin {
  * -----------------------------------
  * */
 group = "convention"
-version = "1.3.1"
+version = "1.3.2"
 
 convention {
   publishing {
