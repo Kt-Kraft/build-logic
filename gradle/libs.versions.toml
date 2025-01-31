@@ -1,25 +1,24 @@
 [versions]
-android-tools-build = "8.7.3"
-android-tools-common = "31.7.3"
-benManes = "0.51.0"
+androidToolsBuild = "8.8.0"
+androidToolsCommon = "31.8.0"
+benManes = "0.52.0"
 catalogUpdate = "0.8.5"
-guava = "23.0"
+guava = "32.0.1-android"
 indramahkota = "1.2.0"
 jgit = "7.1.0.202411261347-r"
-kase-change = "1.4.1"
-kotlin = "2.1.0"
-kotlin-dokka = "2.0.0"
-r8-version = "8.5.35"
+kaseChange = "1.4.1"
+kotlin = "2.1.10"
+r8Version = "8.7.18"
 secrets = "2.0.1"
 
 [libraries]
-android-r8 = { module = "com.android.tools:r8", version.ref = "r8-version" }
-android-tools-build = { module = "com.android.tools.build:gradle", version.ref = "android-tools-build" }
-android-tools-common = { module = "com.android.tools:common", version.ref = "android-tools-common" }
+android-r8 = { module = "com.android.tools:r8", version.ref = "r8Version" }
+android-tools-build = { module = "com.android.tools.build:gradle", version.ref = "androidToolsBuild" }
+android-tools-common = { module = "com.android.tools:common", version.ref = "androidToolsCommon" }
 compose-compiler-gradle-plugin = { module = "org.jetbrains.kotlin:compose-compiler-gradle-plugin", version.ref = "kotlin" }
 google-guava = { module = "com.google.guava:guava", version.ref = "guava" }
 jgit = { module = "org.eclipse.jgit:org.eclipse.jgit", version.ref = "jgit" }
-kase-change = { module = "net.pearx.kasechange:kasechange-jvm", version.ref = "kase-change" }
+kase-change = { module = "net.pearx.kasechange:kasechange-jvm", version.ref = "kaseChange" }
 kotlin-gradle-plugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
 secret-gradle-plugin = { module = "com.google.android.libraries.mapsplatform.secrets-gradle-plugin:secrets-gradle-plugin", version.ref = "secrets" }
 
@@ -28,5 +27,4 @@ ben-manes-versions = { id = "com.github.ben-manes.versions", version.ref = "benM
 convention-commitlint = { id = "commitlint", version.ref = "indramahkota" }
 convention-publish-config = { id = "publish.config", version.ref = "indramahkota" }
 convention-publishing = { id = "publish", version.ref = "indramahkota" }
-dokka = { id = "org.jetbrains.dokka", version.ref = "kotlin-dokka" }
 version-catalog-update = { id = "nl.littlerobots.version-catalog-update", version.ref = "catalogUpdate" }

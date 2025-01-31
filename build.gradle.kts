@@ -10,7 +10,6 @@ plugins {
   signing
   alias(libs.plugins.ben.manes.versions)
   alias(libs.plugins.version.catalog.update)
-  alias(libs.plugins.dokka)
   alias(libs.plugins.convention.publish.config)
   alias(libs.plugins.convention.publishing)
   alias(libs.plugins.convention.commitlint)

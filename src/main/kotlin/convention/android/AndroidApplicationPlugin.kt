@@ -86,11 +86,14 @@ private fun Project.configureApplicationAndroid(androidOptions: AndroidOptionsEx
 
     defaultConfig {
       targetSdk = androidOptions.targetSdk.get()
-      // TODO: Create extension for setup resource configurations
-      // Fix: getString incorrect value after isShrinkResources=true
-      resourceConfigurations.addAll(listOf("en", "in"))
       // Collect proguard rules from 'proguard' dir
       setProguardFiles(projectProguardFiles() + getDefaultProguardFile(PROGUARD_FILENAME))
+    }
+
+    androidResources {
+      // TODO: Create extension for setup resource configurations
+      // Fix: getString incorrect value after isShrinkResources=true
+      localeFilters.addAll(listOf("en", "in"))
     }
 
     buildFeatures {
