@@ -45,9 +45,6 @@ public open class MultiplatformPlugin @Inject constructor(
     explicitApi()
 
     applyDefaultHierarchyTemplate()
-    compilerOptions {
-      extraWarnings.set(true)
-    }
 
     if (linux) {
       linuxX64()
@@ -147,7 +144,6 @@ public open class MultiplatformPlugin @Inject constructor(
             freeCompilerArgs.addAll(Config.compilerArgs)
             optIn.addAll(Config.optIns)
             progressiveMode.set(true)
-            extraWarnings.set(false)
           }
         }
       }
