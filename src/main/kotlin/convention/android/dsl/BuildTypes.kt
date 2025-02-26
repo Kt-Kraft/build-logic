@@ -4,15 +4,15 @@ import com.android.build.api.dsl.BuildType
 import org.gradle.api.NamedDomainObjectContainer
 
 public const val BUILD_TYPE_DEBUG: String = "debug"
-public const val BUILD_TYPE_STAGING: String = "staging"
 public const val BUILD_TYPE_RELEASE: String = "release"
+public const val BUILD_TYPE_PROFILE: String = "profile"
 
 public enum class BuildTypeSuffix(
   public val suffix: String? = null,
 ) {
   DEBUG(".$BUILD_TYPE_DEBUG"),
-  STAGING,
   RELEASE,
+  PROFILE,
 }
 
 /**
@@ -24,4 +24,4 @@ public enum class BuildTypeSuffix(
  */
 public fun <BuildTypeT : BuildType> NamedDomainObjectContainer<BuildTypeT>.staging(
   action: BuildTypeT.() -> Unit,
-): BuildTypeT = getByName(BUILD_TYPE_STAGING, action)
+): BuildTypeT = getByName(BUILD_TYPE_PROFILE, action)

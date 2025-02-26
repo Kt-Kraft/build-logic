@@ -5,8 +5,8 @@ import com.android.build.api.dsl.ApplicationExtension
 import com.android.build.api.variant.ApplicationAndroidComponentsExtension
 import com.google.android.libraries.mapsplatform.secrets_gradle_plugin.SecretsPluginExtension
 import convention.android.dsl.BUILD_TYPE_DEBUG
+import convention.android.dsl.BUILD_TYPE_PROFILE
 import convention.android.dsl.BUILD_TYPE_RELEASE
-import convention.android.dsl.BUILD_TYPE_STAGING
 import convention.android.dsl.BuildTypeSuffix
 import convention.android.internal.PROGUARD_FILENAME
 import convention.android.internal.androidComponents
@@ -122,9 +122,8 @@ private fun Project.configureApplicationAndroid(androidOptions: AndroidOptionsEx
       }
 
       // Production build with release app id, but able to debug
-      register(BUILD_TYPE_STAGING) {
+      register(BUILD_TYPE_PROFILE) {
         initWith(getByName(BUILD_TYPE_RELEASE))
-        applicationIdSuffix = BuildTypeSuffix.STAGING.suffix
         matchingFallbacks += listOf(BUILD_TYPE_RELEASE)
 
         // We can not use isDebuggable = true here, so set DEBUG field ourselves.
@@ -188,7 +187,7 @@ private fun Project.finalizeApplicationAndroid() =
 
     // Each build variant is typically defined by a combination of Build types and Product flavors
     // Ex: freeStaging, paidStaging, where free and paid is Product flavors
-    onVariants(selector().withBuildType(BUILD_TYPE_STAGING)) { variant ->
+    onVariants(selector().withBuildType(BUILD_TYPE_PROFILE)) { variant ->
       val makeDebuggableTask = tasks.register<MakeDebuggableTask>(
         "make${name.toPascalCase()}${variant.name.toPascalCase()}Debuggable",
       ) {

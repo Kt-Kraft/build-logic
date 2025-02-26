@@ -5,6 +5,8 @@ import convention.publishing.dsl.setGitHubProject
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
+  // Use supported embeddedKotlinVersion for kotlin standard library version
+  // https://docs.gradle.org/current/kotlin-dsl/gradle/org.gradle.kotlin.dsl/embedded-kotlin-version.html
   `kotlin-dsl`
   `maven-publish`
   signing
@@ -150,7 +152,7 @@ gradlePlugin {
  * -----------------------------------
  * */
 group = "convention"
-version = "1.3.2"
+version = "1.3.3"
 
 convention {
   publishing {
