@@ -17,11 +17,11 @@ public enum class BuildTypeSuffix(
 
 /**
  * Extension function for the NamedDomainObjectContainer class.
- * This function is used to configure the staging build type.
+ * This function is used to configure the profile build type.
  *
- * @param action A lambda with receiver of type BuildTypeT. This lambda is used to configure the staging build type.
- * @return The configured staging build type.
+ * @param action A lambda with receiver of type BuildTypeT. This lambda is used to configure the staging profile type.
+ * @return The configured profile build type.
  */
-public fun <BuildTypeT : BuildType> NamedDomainObjectContainer<BuildTypeT>.staging(
+public fun <BuildTypeT : BuildType> NamedDomainObjectContainer<BuildTypeT>.profile(
   action: BuildTypeT.() -> Unit,
 ): BuildTypeT = getByName(BUILD_TYPE_PROFILE, action)
