@@ -43,6 +43,9 @@ public abstract class MultiplatformOptionsExtension @Inject constructor(
   public val wasmWASI: Property<Boolean> =
     objects.property(Boolean::class.java).convention(false)
 
+  public val desktop: Property<Boolean> =
+    objects.property(Boolean::class.java).convention(false)
+
   override fun setDefaults(defaults: MultiplatformOptionsExtension) {
     jvm.convention(defaults.jvm)
     android.convention(defaults.android)
@@ -55,6 +58,7 @@ public abstract class MultiplatformOptionsExtension @Inject constructor(
     windows.convention(defaults.windows)
     wasmJs.convention(defaults.wasmJs)
     wasmWASI.convention(defaults.wasmWASI)
+    desktop.convention(defaults.desktop)
   }
 
   public operator fun component1(): Boolean = jvm.get()
@@ -68,6 +72,7 @@ public abstract class MultiplatformOptionsExtension @Inject constructor(
   public operator fun component9(): Boolean = windows.get()
   public operator fun component10(): Boolean = wasmJs.get()
   public operator fun component11(): Boolean = wasmWASI.get()
+  public operator fun component12(): Boolean = desktop.get()
 
   public companion object {
     internal const val NAME = "multiplatform"

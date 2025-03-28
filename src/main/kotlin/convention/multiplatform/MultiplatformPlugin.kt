@@ -39,7 +39,7 @@ public open class MultiplatformPlugin @Inject constructor(
   private fun Project.configureMultiplatform(
     multiplatformOptionsExtension: MultiplatformOptionsExtension
   ) = extensions.configure<KotlinMultiplatformExtension> {
-    val (jvm, android, linux, iOS, js, tvOS, macOS, watchOS, windows, wasmJs, wasmWASI) =
+    val (jvm, android, linux, iOS, js, tvOS, macOS, watchOS, windows, wasmJs, wasmWASI, desktop) =
       multiplatformOptionsExtension
 
     explicitApi()
@@ -68,6 +68,10 @@ public open class MultiplatformPlugin @Inject constructor(
 
     if (wasmWASI) wasmWasi {
       nodejs()
+    }
+
+    if (desktop) {
+      jvm("desktop")
     }
 
     if (android) androidTarget {
