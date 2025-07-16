@@ -6,9 +6,7 @@ import convention.android.internal.androidComponents
 import convention.android.internal.projectProguardFiles
 import convention.common.annotation.InternalPluginApi
 import convention.common.constant.PLUGIN_ID_ANDROID_LIBRARY
-import convention.common.constant.PLUGIN_ID_KOTLIN_MULTIPLATFORM
 import convention.common.internal.applyPlugins
-import convention.common.internal.hasPlugin
 import convention.common.internal.requiredPlugin
 import javax.inject.Inject
 import org.gradle.api.Project
@@ -27,10 +25,7 @@ public class AndroidLibraryPlugin @Inject constructor(
     )
     applyPlugins(PLUGIN_ID_ANDROID_LIBRARY)
 
-    if (!pluginRegistry.hasPlugin(PLUGIN_ID_KOTLIN_MULTIPLATFORM)) {
-      configureKotlinAndroid()
-    }
-
+    configureKotlinAndroid()
     configureCommonAndroid()
     configureLibraryAndroid()
     finalizeLibraryAndroid()

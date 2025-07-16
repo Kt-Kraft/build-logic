@@ -6,6 +6,8 @@ import convention.common.constant.PLUGIN_ID_KOTLIN_MULTIPLATFORM
 import convention.common.internal.applyPlugins
 import convention.common.internal.requiredPlugin
 import convention.common.utils.Config
+import convention.common.utils.addDistinctCompilerArgs
+import convention.common.utils.addDistinctOptIns
 import javax.inject.Inject
 import org.gradle.api.Project
 import org.gradle.api.internal.plugins.PluginRegistry
@@ -71,7 +73,7 @@ public open class MultiplatformPlugin @Inject constructor(
       publishLibraryVariants("release")
       compilerOptions {
         jvmTarget.set(conventionExtension.jvmTarget)
-        freeCompilerArgs.addAll(Config.jvmCompilerArgs)
+        addDistinctCompilerArgs(Config.jvmCompilerArgs)
       }
     }
 
@@ -126,8 +128,8 @@ public open class MultiplatformPlugin @Inject constructor(
       compilations.all {
         compileTaskProvider.configure {
           compilerOptions {
-            freeCompilerArgs.addAll(Config.compilerArgs)
-            optIn.addAll(Config.optIns)
+            addDistinctCompilerArgs(Config.compilerArgs)
+            addDistinctOptIns(Config.optIns)
             progressiveMode.set(true)
           }
         }

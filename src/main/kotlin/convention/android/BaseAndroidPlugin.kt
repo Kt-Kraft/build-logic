@@ -5,6 +5,8 @@ import convention.android.internal.android
 import convention.common.BaseConventionPlugin
 import convention.common.annotation.InternalPluginApi
 import convention.common.utils.Config
+import convention.common.utils.addDistinctCompilerArgs
+import convention.common.utils.addDistinctOptIns
 import org.gradle.api.JavaVersion
 import org.gradle.api.Project
 import org.gradle.api.provider.Provider
@@ -46,8 +48,8 @@ internal fun Project.configureKotlinAndroid() {
     configure<KotlinAndroidProjectExtension> {
       explicitApi()
       compilerOptions {
-        freeCompilerArgs.addAll(Config.compilerArgs)
-        optIn.addAll(Config.optIns)
+        addDistinctCompilerArgs(Config.compilerArgs)
+        addDistinctOptIns(Config.optIns)
         progressiveMode.set(true)
       }
     }
