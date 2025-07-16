@@ -152,7 +152,7 @@ gradlePlugin {
  * -----------------------------------
  * */
 group = "convention"
-version = "1.4.3"
+version = "1.4.4"
 
 convention {
   publishing {
