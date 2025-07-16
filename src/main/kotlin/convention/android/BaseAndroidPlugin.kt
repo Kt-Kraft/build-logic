@@ -21,7 +21,6 @@ public abstract class BaseAndroidPlugin : BaseConventionPlugin() {
   @InternalPluginApi
   protected fun Project.configureCommonAndroid() {
     configureCommon(androidOptionsExtension, conventionExtension.javaVersion)
-    configureKotlin()
   }
 }
 
@@ -42,9 +41,10 @@ private fun Project.configureCommon(
   }
 }
 
-private fun Project.configureKotlin() {
+internal fun Project.configureKotlinAndroid() {
   plugins.withType<AbstractKotlinAndroidPluginWrapper> {
     configure<KotlinAndroidProjectExtension> {
+      explicitApi()
       compilerOptions {
         freeCompilerArgs.addAll(Config.compilerArgs)
         optIn.addAll(Config.optIns)

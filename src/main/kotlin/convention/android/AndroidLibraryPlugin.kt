@@ -6,15 +6,14 @@ import convention.android.internal.androidComponents
 import convention.android.internal.projectProguardFiles
 import convention.common.annotation.InternalPluginApi
 import convention.common.constant.PLUGIN_ID_ANDROID_LIBRARY
+import convention.common.constant.PLUGIN_ID_KOTLIN_MULTIPLATFORM
 import convention.common.internal.applyPlugins
+import convention.common.internal.hasPlugin
 import convention.common.internal.requiredPlugin
 import javax.inject.Inject
 import org.gradle.api.Project
 import org.gradle.api.internal.plugins.PluginRegistry
 import org.gradle.kotlin.dsl.configure
-import org.gradle.kotlin.dsl.withType
-import org.jetbrains.kotlin.gradle.dsl.KotlinAndroidProjectExtension
-import org.jetbrains.kotlin.gradle.plugin.AbstractKotlinAndroidPluginWrapper
 
 public class AndroidLibraryPlugin @Inject constructor(
   private val pluginRegistry: PluginRegistry,
@@ -28,28 +27,23 @@ public class AndroidLibraryPlugin @Inject constructor(
     )
     applyPlugins(PLUGIN_ID_ANDROID_LIBRARY)
 
+    if (!pluginRegistry.hasPlugin(PLUGIN_ID_KOTLIN_MULTIPLATFORM)) {
+      configureKotlinAndroid()
+    }
+
     configureCommonAndroid()
-    configureLibrary()
-    configureKotlin()
+    configureLibraryAndroid()
     finalizeLibraryAndroid()
   }
 }
 
-private fun Project.configureLibrary() =
+private fun Project.configureLibraryAndroid() =
   extensions.configure<LibraryExtension> {
     defaultConfig {
       // Add all files from 'proguard' dir
       consumerProguardFiles.addAll(projectProguardFiles())
     }
   }
-
-private fun Project.configureKotlin() {
-  plugins.withType<AbstractKotlinAndroidPluginWrapper> {
-    configure<KotlinAndroidProjectExtension> {
-      explicitApi()
-    }
-  }
-}
 
 // @see: https://developer.android.com/reference/tools/gradle-api/7.0/com/android/build/api/extension/LibraryAndroidComponentsExtension
 private fun Project.finalizeLibraryAndroid() =

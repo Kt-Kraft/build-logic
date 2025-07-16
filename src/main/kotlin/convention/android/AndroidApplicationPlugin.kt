@@ -17,8 +17,10 @@ import convention.android.task.RenameApkTask
 import convention.android.task.RenameBundleTask
 import convention.common.annotation.InternalPluginApi
 import convention.common.constant.PLUGIN_ID_ANDROID_APPLICATION
+import convention.common.constant.PLUGIN_ID_KOTLIN_MULTIPLATFORM
 import convention.common.constant.SECRET_GRADLEW_PLUGIN
 import convention.common.internal.applyPlugins
+import convention.common.internal.hasPlugin
 import convention.common.internal.requiredPlugin
 import convention.common.utils.loadPropertiesFile
 import javax.inject.Inject
@@ -44,10 +46,14 @@ public class AndroidApplicationPlugin @Inject constructor(
     )
     applyPlugins(PLUGIN_ID_ANDROID_APPLICATION, SECRET_GRADLEW_PLUGIN)
 
+    if (!pluginRegistry.hasPlugin(PLUGIN_ID_KOTLIN_MULTIPLATFORM)) {
+      configureKotlinAndroid()
+    }
+
     configureCommonAndroid()
     configureApplicationAndroid(androidOptionsExtension)
-    configureSecrets()
     finalizeApplicationAndroid()
+    configureSecrets()
   }
 }
 

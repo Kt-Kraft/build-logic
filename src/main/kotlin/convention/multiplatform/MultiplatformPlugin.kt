@@ -10,6 +10,7 @@ import javax.inject.Inject
 import org.gradle.api.Project
 import org.gradle.api.internal.plugins.PluginRegistry
 import org.gradle.kotlin.dsl.configure
+import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
@@ -31,7 +32,7 @@ public open class MultiplatformPlugin @Inject constructor(
     configureMultiplatform(multiplatformOptionsExtension)
   }
 
-  @OptIn(ExperimentalWasmDsl::class)
+  @OptIn(ExperimentalWasmDsl::class, ExperimentalKotlinGradlePluginApi::class)
   private fun Project.configureMultiplatform(
     multiplatformOptionsExtension: MultiplatformOptionsExtension
   ) = extensions.configure<KotlinMultiplatformExtension> {
