@@ -11,8 +11,8 @@ public object Config {
   public val compilerArgs: List<String> = listOf(
     "-Xexpect-actual-classes",
     "-Xconsistent-data-class-copy-visibility",
-    "-Xsuppress-warning=NOTHING_TO_INLINE",
-    "-Xsuppress-warning=UNUSED_ANONYMOUS_PARAMETER",
+    "-Xwarning-level=NOTHING_TO_INLINE:disabled",
+    "-Xwarning-level=UNUSED_ANONYMOUS_PARAMETER:disabled",
     "-Xcontext-parameters",
   )
 
