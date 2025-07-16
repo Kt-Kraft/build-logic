@@ -12,6 +12,7 @@ import org.gradle.api.internal.plugins.PluginRegistry
 import org.gradle.kotlin.dsl.configure
 import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
+import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
 
 public open class MultiplatformPlugin @Inject constructor(
   private val pluginRegistry: PluginRegistry,
@@ -75,37 +76,38 @@ public open class MultiplatformPlugin @Inject constructor(
 
     if (jvm) jvm()
 
-    // TODO-Improve: Set binary base name etc.
-    sequence {
-      if (iOS) {
-        yield(iosX64())
-        yield(iosArm64())
-        yield(iosSimulatorArm64())
-      }
-      if (macOS) {
-        yield(macosArm64())
-        yield(macosX64())
-      }
-      if (tvOS) {
-        yield(tvosX64())
-        yield(tvosArm64())
-        yield(tvosSimulatorArm64())
-      }
-      if (watchOS) {
-        yield(watchosX64())
-        yield(watchosArm64())
-        yield(watchosDeviceArm64())
-        yield(watchosSimulatorArm64())
-      }
-    }.toList().onEach {
-      it.binaries.framework {
+    val nativeTargets = mutableListOf<KotlinNativeTarget>()
+
+    if (iOS) {
+      nativeTargets += iosArm64()
+      nativeTargets += iosSimulatorArm64()
+    }
+
+    if (macOS) {
+      nativeTargets += macosArm64()
+      nativeTargets += macosX64()
+    }
+
+    if (tvOS) {
+      nativeTargets += tvosX64()
+      nativeTargets += tvosArm64()
+      nativeTargets += tvosSimulatorArm64()
+    }
+
+    if (watchOS) {
+      nativeTargets += watchosX64()
+      nativeTargets += watchosArm64()
+      nativeTargets += watchosDeviceArm64()
+      nativeTargets += watchosSimulatorArm64()
+    }
+
+    nativeTargets.forEach { target ->
+      target.binaries.framework {
         baseName = path.substring(1).replace(':', '_')
         val bundleId = path.substring(1)
           .replace(':', '.')
-          .replace(Regex("-(.)")) { matchResult ->
-            matchResult.groupValues[1].uppercase()
-          }
-        freeCompilerArgs += listOf("-Xbinary=bundleId=$bundleId")
+          .replace(Regex("-(.)")) { it.groupValues[1].uppercase() }
+        freeCompilerArgs += "-Xbinary=bundleId=$bundleId"
         isStatic = true
       }
     }
