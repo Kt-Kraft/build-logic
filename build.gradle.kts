@@ -40,9 +40,9 @@ dependencies {
 
 kotlin {
   explicitApi()
-  jvmToolchain(17)
+  jvmToolchain(21)
   compilerOptions {
-    jvmTarget.set(JvmTarget.JVM_17)
+    jvmTarget.set(JvmTarget.JVM_21)
   }
 }
 
@@ -67,8 +67,6 @@ versionCatalogUpdate {
   sortByKey.set(true)
   keep {
     keepUnusedVersions.set(true)
-    keepUnusedLibraries.set(true)
-    keepUnusedPlugins.set(true)
   }
 }
 
