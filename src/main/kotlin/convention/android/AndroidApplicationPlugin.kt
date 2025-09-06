@@ -44,9 +44,8 @@ public class AndroidApplicationPlugin @Inject constructor(
     )
     applyPlugins(PLUGIN_ID_ANDROID_APPLICATION, SECRET_GRADLEW_PLUGIN)
 
-    configureKotlinAndroid()
     configureCommonAndroid()
-    configureApplicationAndroid(androidOptionsExtension)
+    configureApplicationAndroid(androidOptions)
     finalizeApplicationAndroid()
     configureSecrets()
   }
@@ -151,12 +150,36 @@ private fun Project.configureSecrets() {
 // @see: https://developer.android.com/reference/tools/gradle-api/7.0/com/android/build/api/extension/ApplicationAndroidComponentsExtension
 private fun Project.finalizeApplicationAndroid() =
   androidComponents<ApplicationAndroidComponentsExtension> {
+    /**
+     * Gradle generates build variants by combining buildTypes and productFlavors.
+     *
+     * ┌─────────────────────┬────────────┬──────────────────────────────┬─────────────┐
+     * │ Variant             │ Build Type │ Product Flavor (environment) │ Flavor Name │
+     * ├─────────────────────┼────────────┼──────────────────────────────┼─────────────┤
+     * │ developmentDebug    │ debug      │ development                  │ development │
+     * │ productionDebug     │ debug      │ production                   │ production  │
+     * │ developmentRelease  │ release    │ development                  │ development │
+     * │ productionRelease   │ release    │ production                   │ production  │
+     * │ developmentProfile  │ profile    │ development                  │ development │
+     * │ productionProfile   │ profile    │ production                   │ production  │
+     * └─────────────────────┴────────────┴──────────────────────────────┴─────────────┘
+     *
+     * - `debug`    → used during development with debugging tools enabled
+     * - `release`  → optimized for publishing/distribution
+     * - `profile`  → used for performance testing and profiling
+     *
+     * Each variant is named as <flavorName><BuildType>, e.g.:
+     * - developmentDebug
+     * - productionRelease
+     */
+
     onVariants { variant ->
       val loader = variant.artifacts.getBuiltArtifactsLoader()
       val apk = variant.artifacts.get(SingleArtifact.APK)
       val bundle = variant.artifacts.get(SingleArtifact.BUNDLE)
       val manifest = variant.artifacts.get(SingleArtifact.MERGED_MANIFEST)
-      val stringsXml = layout.projectDirectory.asFile.resolve("src/main/res/values/strings.xml")
+      val mapping = variant.artifacts.get(SingleArtifact.OBFUSCATION_MAPPING_FILE)
+      val defaultStringsXml = layout.projectDirectory.asFile.resolve("src/main/res/values/strings.xml")
 
       tasks.register(
         "make${name.toPascalCase()}${variant.name.toPascalCase()}RenamedApk",
@@ -165,11 +188,16 @@ private fun Project.finalizeApplicationAndroid() =
         group = "Build Logic"
         description =
           "Rename project: ${this@finalizeApplicationAndroid.name.toPascalCase()} for variant: ${variant.name.toPascalCase()} APK"
+        dependsOn(tasks.named("create${variant.name.toPascalCase()}ApkListingFileRedirect"))
+
         mBuiltArtifactsLoader.set(loader)
         inputApkDirectory.set(apk)
-        inputManifestDirectory.set(manifest)
-        inputStringsDirectory.set(stringsXml)
-        variantName.set(variant.name)
+        inputManifestFile.set(manifest)
+        inputStringsFile.set(defaultStringsXml)
+        inputMappingFile.set(mapping)
+        inputRootDirectory.set(this@finalizeApplicationAndroid.rootProject.layout.projectDirectory)
+        inputProjectName.set(this@finalizeApplicationAndroid.name)
+        inputVariantName.set(variant.name)
       }
 
       tasks.register(
@@ -179,10 +207,15 @@ private fun Project.finalizeApplicationAndroid() =
         group = "Build Logic"
         description =
           "Rename project: ${this@finalizeApplicationAndroid.name.toPascalCase()} for variant: ${variant.name.toPascalCase()} Bundle"
-        inputBundleDirectory.set(bundle)
-        inputManifestDirectory.set(manifest)
-        inputStringsDirectory.set(stringsXml)
-        variantName.set(variant.name)
+        dependsOn(tasks.named("create${variant.name.toPascalCase()}BundleListingFileRedirect"))
+
+        inputBundleFile.set(bundle)
+        inputManifestFile.set(manifest)
+        inputStringsFile.set(defaultStringsXml)
+        inputMappingFile.set(mapping)
+        inputRootDirectory.set(this@finalizeApplicationAndroid.rootProject.layout.projectDirectory)
+        inputProjectName.set(this@finalizeApplicationAndroid.name)
+        inputVariantName.set(variant.name)
       }
     }
 

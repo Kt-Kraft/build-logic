@@ -5,7 +5,6 @@ import org.gradle.api.plugins.ExtensionContainer
 import org.gradle.kotlin.dsl.create
 
 public interface WithDefaults<T> {
-
   public fun setDefaults(defaults: T)
 }
 
@@ -15,10 +14,6 @@ internal inline fun <reified T : WithDefaults<T>> ExtensionContainer.createWithD
   defaults: T?,
   publicType: KClass<in T>? = null,
 ): T {
-  val extension = if (publicType == null) {
-    create(name)
-  } else {
-    create(publicType, name, T::class) as T
-  }
+  val extension = if (publicType == null) create(name) else create(publicType, name, T::class) as T
   return extension.apply { if (defaults != null) setDefaults(defaults) }
 }

@@ -25,7 +25,6 @@ public class AndroidLibraryPlugin @Inject constructor(
     )
     applyPlugins(PLUGIN_ID_ANDROID_LIBRARY)
 
-    configureKotlinAndroid()
     configureCommonAndroid()
     configureLibraryAndroid()
     finalizeLibraryAndroid()

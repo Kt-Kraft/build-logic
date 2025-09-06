@@ -11,16 +11,19 @@ import org.gradle.api.plugins.ExtensionContainer
 import org.gradle.api.provider.Property
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
-public abstract class ConventionExtension @Inject constructor(
+ public abstract class ConventionOptionsExtension @Inject constructor(
   layout: ProjectLayout,
   objects: ObjectFactory,
-) : ExtensionAware, WithDefaults<ConventionExtension> {
+) : ExtensionAware, WithDefaults<ConventionOptionsExtension> {
 
   public val javaVersion: Property<JavaVersion> =
     objects.property(JavaVersion::class.java).convention(JavaVersion.VERSION_17)
 
   public val jvmTarget: Property<JvmTarget> =
     objects.property(JvmTarget::class.java).convention(JvmTarget.JVM_17)
+
+  public val jvmToolchainVersion: Property<Int> =
+    objects.property(Int::class.java).convention(21)
 
   public val configsDir: DirectoryProperty =
     objects.directoryProperty()
@@ -30,9 +33,10 @@ public abstract class ConventionExtension @Inject constructor(
     objects.directoryProperty()
       .convention(layout.buildDirectory.dir(DEFAULT_REPORTS_DIR))
 
-  override fun setDefaults(defaults: ConventionExtension) {
+  override fun setDefaults(defaults: ConventionOptionsExtension) {
     javaVersion.convention(defaults.javaVersion)
     jvmTarget.convention(defaults.jvmTarget)
+    jvmToolchainVersion.convention(defaults.jvmToolchainVersion)
     configsDir.convention(defaults.configsDir)
     reportsDir.convention(defaults.reportsDir)
   }
@@ -44,5 +48,5 @@ public abstract class ConventionExtension @Inject constructor(
   }
 }
 
-public val ExtensionContainer.convention: ConventionExtension?
-  get() = findExtByName(ConventionExtension.NAME)
+public val ExtensionContainer.convention: ConventionOptionsExtension?
+  get() = findExtByName(ConventionOptionsExtension.NAME)

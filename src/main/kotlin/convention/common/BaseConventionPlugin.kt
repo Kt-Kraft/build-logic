@@ -15,18 +15,18 @@ public abstract class BaseConventionPlugin : Plugin<Project> {
   public lateinit var mProject: Project
     private set
 
-  protected lateinit var conventionExtension: ConventionExtension
+  protected lateinit var conventionOptions: ConventionOptionsExtension
     private set
 
   @PublishedApi
   @InternalPluginApi
-  internal val conventionExtensions: Sequence<ConventionExtension>
+  internal val conventionOptionsExtensions: Sequence<ConventionOptionsExtension>
     get() = mProject.parents.mapNotNull { it.extensions.convention }
 
   @OptIn(InternalPluginApi::class)
   final override fun apply(target: Project) {
     mProject = target
-    conventionExtension = mProject.extensions.obtainConventionExtension()
+    conventionOptions = mProject.extensions.obtainConventionOptionsExtension()
     target.configure()
   }
 
@@ -38,10 +38,10 @@ public abstract class BaseConventionPlugin : Plugin<Project> {
     name: String,
     publicType: KClass<in T>? = null,
   ): T {
-    val defaults = conventionExtensions
+    val defaults = conventionOptionsExtensions
       .mapNotNull { it.extensions.findExtByName<T>(name) }
       .firstOrNull()
-    return (conventionExtension as ExtensionAware).extensions.createWithDefaults(
+    return (conventionOptions as ExtensionAware).extensions.createWithDefaults(
       name,
       defaults,
       publicType,
@@ -49,17 +49,17 @@ public abstract class BaseConventionPlugin : Plugin<Project> {
   }
 
   @InternalPluginApi
-  private fun ExtensionContainer.obtainConventionExtension(): ConventionExtension {
-    val conventionExtensionParent = conventionExtensions.firstOrNull()
+  private fun ExtensionContainer.obtainConventionOptionsExtension(): ConventionOptionsExtension {
+    val conventionOptionsExtensionParent = conventionOptionsExtensions.firstOrNull()
     return when {
       convention != null -> convention!!
 
-      conventionExtensionParent != null -> {
-        add(ConventionExtension.NAME, conventionExtensionParent)
-        getByType(ConventionExtension::class.java)
+      conventionOptionsExtensionParent != null -> {
+        add(ConventionOptionsExtension.NAME, conventionOptionsExtensionParent)
+        getByType(ConventionOptionsExtension::class.java)
       }
 
-      else -> create(ConventionExtension.NAME, ConventionExtension::class.java)
+      else -> create(ConventionOptionsExtension.NAME, ConventionOptionsExtension::class.java)
     }
   }
 }

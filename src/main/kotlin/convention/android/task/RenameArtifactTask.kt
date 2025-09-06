@@ -7,7 +7,9 @@ import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.util.Locale
 import javax.xml.parsers.DocumentBuilderFactory
+import net.pearx.kasechange.toSnakeCase
 import org.gradle.api.DefaultTask
+import org.gradle.api.GradleException
 import org.gradle.api.file.DirectoryProperty
 import org.gradle.api.file.RegularFileProperty
 import org.gradle.api.provider.Property
@@ -32,7 +34,7 @@ private fun Document.createSuffix(variant: String, extension: String): String {
   val versionName = documentElement.getAttribute("android:versionName")
   val formattedDateTime = LocalDateTime.now(ZoneId.systemDefault())
     .format(DateTimeFormatter.ofPattern("ddMMMyyyy'T'HH.mm", Locale.getDefault()))
-  return "V$versionName-$versionCode-$formattedDateTime-${variant.uppercase()}.$extension"
+  return "V$versionName-$versionCode-$formattedDateTime-${variant.toSnakeCase().uppercase()}.$extension"
 }
 
 private fun createNewAppName(
@@ -55,33 +57,57 @@ private fun createNewAppName(
 public abstract class RenameBundleTask : DefaultTask() {
 
   @get:InputFile
-  public abstract val inputBundleDirectory: RegularFileProperty
+  public abstract val inputBundleFile: RegularFileProperty
 
   @get:InputFile
-  public abstract val inputStringsDirectory: RegularFileProperty
+  public abstract val inputStringsFile: RegularFileProperty
 
   @get:InputFile
-  public abstract val inputManifestDirectory: RegularFileProperty
+  public abstract val inputManifestFile: RegularFileProperty
+
+  @get:InputFile
+  public abstract val inputMappingFile: RegularFileProperty
+
+  @get:InputDirectory
+  public abstract val inputRootDirectory: DirectoryProperty
 
   @get:Input
-  public abstract val variantName: Property<String>
+  public abstract val inputProjectName: Property<String>
+
+  @get:Input
+  public abstract val inputVariantName: Property<String>
 
   @TaskAction
   internal fun doTaskAction() {
-    val newAppName = createNewAppName(
-      inputManifestDirectory.get().asFile,
-      inputStringsDirectory.get().asFile,
-      variantName.get(),
-      "aab"
-    )
+    val manifestDir = inputManifestFile.get().asFile
+    val stringsDir = inputStringsFile.get().asFile
+    val bundleFile = inputBundleFile.get().asFile
+    val mappingFile = inputMappingFile.get().asFile
+    val rootDirectory = inputRootDirectory.get().asFile
+    val projectName = inputProjectName.get()
+    val variantName = inputVariantName.get()
+
+    val deliverableDir = File(rootDirectory, "distributions/${projectName}/aab")
+      .apply { if (!exists()) mkdirs() }
+    val mappingDir = File(rootDirectory, "distributions/$projectName/mapping/$variantName")
+      .apply { if (!exists()) mkdirs() }
+    val newAppName = createNewAppName(manifestDir, stringsDir, variantName, "aab")
+
     try {
-      val bundleFile = inputBundleDirectory.get().asFile
-      val newApkFile = bundleFile.copyTo(File(bundleFile.parent, "deliverable/$newAppName"), overwrite = true)
-      val renamedOutput = File(bundleFile.parent, "deliverable-aab.txt")
-      renamedOutput.writeText(newApkFile.toPath().toString())
-      println("APK renaming successful: $newAppName")
-    } catch (_: Exception) {
-      println("APK renaming failed.")
+      val newBundleFile = bundleFile.copyTo(File(deliverableDir, newAppName), overwrite = true)
+      val renamedOutput = File(deliverableDir, "latest-deliverable-aab.txt")
+      renamedOutput.writeText(newBundleFile.absolutePath)
+      logger.lifecycle("✅ AAB renaming successful: ${newBundleFile.name}")
+      logger.lifecycle("✅ AAB file copied → ${newBundleFile.absolutePath}")
+
+      if (mappingFile.exists()) {
+        val sourceMappingDir = mappingFile.parentFile
+        sourceMappingDir.copyRecursively(mappingDir, overwrite = true)
+        logger.lifecycle("✅ Mapping files copied → $mappingDir")
+      }
+    } catch (e: Exception) {
+      logger.error("❌ AAB renaming failed: ${e.message}", e)
+      throw GradleException("Failed to rename AAB", e)
     }
   }
 }
@@ -95,13 +121,22 @@ public abstract class RenameApkTask : DefaultTask() {
   public abstract val inputApkDirectory: DirectoryProperty
 
   @get:InputFile
-  public abstract val inputStringsDirectory: RegularFileProperty
+  public abstract val inputStringsFile: RegularFileProperty
 
   @get:InputFile
-  public abstract val inputManifestDirectory: RegularFileProperty
+  public abstract val inputManifestFile: RegularFileProperty
+
+  @get:InputFile
+  public abstract val inputMappingFile: RegularFileProperty
+
+  @get:InputDirectory
+  public abstract val inputRootDirectory: DirectoryProperty
 
   @get:Input
-  public abstract val variantName: Property<String>
+  public abstract val inputProjectName: Property<String>
+
+  @get:Input
+  public abstract val inputVariantName: Property<String>
 
   @TaskAction
   internal fun doTaskAction() {
@@ -116,21 +151,35 @@ public abstract class RenameApkTask : DefaultTask() {
       "Expected one APK!"
     }
 
-    val newAppName = createNewAppName(
-      inputManifestDirectory.get().asFile,
-      inputStringsDirectory.get().asFile,
-      variantName.get(),
-      "apk"
-    )
+    val manifestDir = inputManifestFile.get().asFile
+    val stringsDir = inputStringsFile.get().asFile
+    val mappingFile = inputMappingFile.get().asFile
+    val rootDirectory = inputRootDirectory.get().asFile
+    val projectName = inputProjectName.get()
+    val variantName = inputVariantName.get()
+
+    val deliverableDir = File(rootDirectory, "distributions/${projectName}/apk")
+      .apply { if (!exists()) mkdirs() }
+    val mappingDir = File(rootDirectory, "distributions/$projectName/mapping/$variantName")
+      .apply { if (!exists()) mkdirs() }
+    val newAppName = createNewAppName(manifestDir, stringsDir, variantName, "apk")
 
     try {
       val apkFile = File(builtArtifacts.elements.single().outputFile)
-      val newApkFile = apkFile.copyTo(File(apkFile.parent, "deliverable/$newAppName"), overwrite = true)
-      val renamedOutput = File(apkFile.parent, "deliverable-apk.txt")
-      renamedOutput.writeText(newApkFile.toPath().toString())
-      println("APK renaming successful: $newAppName")
-    } catch (_: Exception) {
-      println("APK renaming failed.")
+      val newApkFile = apkFile.copyTo(File(deliverableDir, newAppName), overwrite = true)
+      val renamedOutput = File(deliverableDir, "latest-deliverable-apk.txt")
+      renamedOutput.writeText(newApkFile.absolutePath)
+      logger.lifecycle("✅ APK renaming successful: ${newApkFile.name}")
+      logger.lifecycle("✅ APK file copied → ${newApkFile.absolutePath}")
+
+      if (mappingFile.exists()) {
+        val sourceMappingDir = mappingFile.parentFile
+        sourceMappingDir.copyRecursively(mappingDir, overwrite = true)
+        logger.lifecycle("✅ Mapping files copied → $mappingDir")
+      }
+    } catch (e: Exception) {
+      logger.error("❌ APK renaming failed: ${e.message}", e)
+      throw GradleException("Failed to rename APK", e)
     }
   }
 }

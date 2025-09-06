@@ -25,7 +25,7 @@ public open class PublishPlugin @Inject constructor(
 ) : BaseConventionPlugin() {
 
   private val publishingOptionsExtension: PublishingOptionsExtension
-    get() = conventionExtension.extensions.publishingOptions
+    get() = conventionOptions.extensions.publishingOptions
 
   @InternalPluginApi
   override fun Project.configure() {

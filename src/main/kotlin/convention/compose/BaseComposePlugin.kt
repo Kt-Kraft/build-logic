@@ -9,7 +9,7 @@ import org.gradle.api.file.DirectoryProperty
 public abstract class BaseComposePlugin : BaseConventionPlugin() {
 
   private val reportsDir: DirectoryProperty
-    get() = conventionExtension.reportsDir
+    get() = conventionOptions.reportsDir
 
   @InternalPluginApi
   protected fun Project.configureCommonComposeAndroid() {

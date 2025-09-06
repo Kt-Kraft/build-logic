@@ -22,7 +22,7 @@ public open class MultiplatformPlugin @Inject constructor(
 ) : BaseConventionPlugin() {
 
   private val multiplatformOptionsExtension: MultiplatformOptionsExtension
-    get() = conventionExtension.extensions.multiplatformOptions
+    get() = conventionOptions.extensions.multiplatformOptions
 
   @InternalPluginApi
   override fun Project.configure() {
@@ -59,7 +59,7 @@ public open class MultiplatformPlugin @Inject constructor(
     }
 
     if (wasmJs) wasmJs {
-      moduleName = this@configureMultiplatform.name
+      outputModuleName.set(this@configureMultiplatform.name)
       nodejs()
       browser()
       binaries.library()
@@ -72,7 +72,7 @@ public open class MultiplatformPlugin @Inject constructor(
     if (android) androidTarget {
       publishLibraryVariants("release")
       compilerOptions {
-        jvmTarget.set(conventionExtension.jvmTarget)
+        jvmTarget.set(conventionOptions.jvmTarget)
         addDistinctCompilerArgs(Config.jvmCompilerArgs)
       }
     }

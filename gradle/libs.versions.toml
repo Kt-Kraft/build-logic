@@ -1,6 +1,6 @@
 [versions]
-androidToolsBuild = "8.12.1"
-androidToolsCommon = "31.12.1"
+androidToolsBuild = "8.13.0"
+androidToolsCommon = "31.13.0"
 benManes = "0.52.0"
 catalogUpdate = "1.0.0"
 indramahkota = "1.5.0"
