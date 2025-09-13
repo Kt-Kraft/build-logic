@@ -185,6 +185,7 @@ private fun Project.finalizeApplicationAndroid() =
         inputStringsFile.set(defaultStringsXml)
         inputMappingFile.set(mapping)
         inputRootDirectory.set(this@finalizeApplicationAndroid.rootProject.layout.projectDirectory)
+        inputProjectBuildDirectory.set(this@finalizeApplicationAndroid.layout.buildDirectory)
         inputProjectName.set(this@finalizeApplicationAndroid.name)
         inputVariantName.set(variant.name)
       }
@@ -203,6 +204,7 @@ private fun Project.finalizeApplicationAndroid() =
         inputStringsFile.set(defaultStringsXml)
         inputMappingFile.set(mapping)
         inputRootDirectory.set(this@finalizeApplicationAndroid.rootProject.layout.projectDirectory)
+        inputProjectBuildDirectory.set(this@finalizeApplicationAndroid.layout.buildDirectory)
         inputProjectName.set(this@finalizeApplicationAndroid.name)
         inputVariantName.set(variant.name)
       }
