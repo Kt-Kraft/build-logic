@@ -11,6 +11,7 @@ import convention.android.dsl.BuildTypeSuffix
 import convention.android.internal.PROGUARD_FILENAME
 import convention.android.internal.androidComponents
 import convention.android.internal.loadKeystoreConfig
+import convention.android.internal.loadKeystoreProperties
 import convention.android.internal.projectProguardFiles
 import convention.android.task.MakeDebuggableTask
 import convention.android.task.RenameApkTask
@@ -20,7 +21,6 @@ import convention.common.constant.PLUGIN_ID_ANDROID_APPLICATION
 import convention.common.constant.SECRET_GRADLEW_PLUGIN
 import convention.common.internal.applyPlugins
 import convention.common.internal.requiredPlugin
-import convention.common.utils.loadPropertiesFile
 import javax.inject.Inject
 import net.pearx.kasechange.toPascalCase
 import org.gradle.api.Project
@@ -56,16 +56,7 @@ private fun Project.configureApplicationAndroid(androidOptions: AndroidOptionsEx
     val debugSignName = "DebugSignConfig"
     val releaseSignName = "ReleaseSignConfig"
 
-    val properties = runCatching {
-      loadPropertiesFile(
-        rootDir.resolve("keystore.properties")
-      )
-    }.getOrElse {
-      loadPropertiesFile(
-        rootDir.resolve("keystore.defaults.properties")
-      )
-    }
-
+    val properties = loadKeystoreProperties()
     val debugKeystoreConfig = properties.loadKeystoreConfig("DEBUG")
     val releaseKeystoreConfig = properties.loadKeystoreConfig("RELEASE")
 
@@ -91,9 +82,9 @@ private fun Project.configureApplicationAndroid(androidOptions: AndroidOptionsEx
     }
 
     androidResources {
-      // TODO: Create extension for setup resource configurations
       // Fix: getString incorrect value after isShrinkResources=true
-      localeFilters.addAll(listOf("en", "in"))
+      // Specifies a list of locales that resources will be kept for.
+      localeFilters.addAll(androidOptions.localeFilters.get())
     }
 
     buildFeatures {
@@ -121,21 +112,19 @@ private fun Project.configureApplicationAndroid(androidOptions: AndroidOptionsEx
         signingConfig = signingConfigs.findByName(releaseSignName)
       }
 
-      // Production build with release app id, but able to debug
-      register(BUILD_TYPE_PROFILE) {
-        initWith(getByName(BUILD_TYPE_RELEASE))
-        matchingFallbacks += listOf(BUILD_TYPE_RELEASE)
+      if (!names.contains(BUILD_TYPE_PROFILE)) {
+        register(BUILD_TYPE_PROFILE) {
+          initWith(getByName(BUILD_TYPE_RELEASE))
+          matchingFallbacks += listOf(BUILD_TYPE_RELEASE)
 
-        // We can not use isDebuggable = true here, so set DEBUG field ourselves.
-        // See `makeDebuggable` for more information
-        buildConfigField(type = "boolean", name = "DEBUG", value = "true")
-      }
-    }
-
-    packaging {
-      // Due to https://github.com/Kotlin/kotlinx.coroutines/issues/2023
-      resources {
-        excludes += "/META-INF/{AL2.0,LGPL2.1}"
+          // We can not use isDebuggable = true here, so set DEBUG field ourselves.
+          // See `makeDebuggable` for more information
+          buildConfigField(type = "boolean", name = "DEBUG", value = "true")
+        }
+      } else {
+        named(BUILD_TYPE_PROFILE) {
+          buildConfigField(type = "boolean", name = "DEBUG", value = "true")
+        }
       }
     }
   }

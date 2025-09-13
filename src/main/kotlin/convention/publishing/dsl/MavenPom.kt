@@ -15,52 +15,38 @@ public fun MavenPomLicenseSpec.mit() {
 }
 
 public data class GithubProject(
-  var owner: String? = null,
-  var repository: String? = null,
+  var owner: String,
+  var repository: String,
 ) {
-  val url: String
-    get() = "$HTTPS$GITHUB_DOMAIN/$owner/$repository"
+  val baseUrl: String get() = "https://$GITHUB_DOMAIN/$owner/$repository"
+  val issuesUrl: String get() = "$baseUrl/issues"
 
-  val ssh: String
-    get() = "$SSH$GITHUB_DOMAIN:$owner/$repository.git"
+  val scmGit: String get() = "scm:git:git://$GITHUB_DOMAIN/$owner/$repository.git"
+  val scmSsh: String get() = "scm:git:ssh://git@$GITHUB_DOMAIN:$owner/$repository.git"
 
-  val git: String
-    get() = "$GIT$GITHUB_DOMAIN/$owner/$repository.git"
-
-  private companion object {
-    const val GIT = "scm:git:git://"
-    const val SSH = "scm:git:ssh://git@"
-    const val HTTPS = "https://"
-    const val GITHUB_DOMAIN = "github.com"
+  public companion object {
+    private const val GITHUB_DOMAIN = "github.com"
   }
 }
 
 public fun MavenPom.setGitHubProject(
+  owner: String,
+  repository: String,
   action: GithubProject.() -> Unit = {},
 ) {
-  val githubProject = GithubProject().apply {
-    action()
-  }
+  val project = GithubProject(owner, repository).apply(action)
 
-  require(!githubProject.owner.isNullOrEmpty()) {
-    "GitHub project owner must be set"
-  }
-
-  require(!githubProject.repository.isNullOrEmpty()) {
-    "GitHub project repository must be set"
-  }
-
-  url.set(githubProject.url)
+  url.set(project.baseUrl)
 
   issueManagement {
-    url.set("${githubProject.url}/issues")
+    url.set(project.issuesUrl)
     system.set("GitHub Issues")
   }
 
   scm {
-    url.set(githubProject.url)
-    connection.set(githubProject.git)
-    developerConnection.set(githubProject.ssh)
+    url.set(project.baseUrl)
+    connection.set(project.scmGit)
+    developerConnection.set(project.scmSsh)
   }
 }
 
@@ -69,23 +55,19 @@ public fun MavenPomDeveloperSpec.developer(
   name: String,
   email: String,
   action: MavenPomDeveloper.() -> Unit = {},
-) {
-  developer {
-    this.id.set(id)
-    this.name.set(name)
-    this.email.set(email)
-    action()
-  }
+): Unit = developer {
+  this.id.set(id)
+  this.name.set(name)
+  this.email.set(email)
+  action()
 }
 
 public fun MavenPomContributorSpec.contributor(
   name: String,
   email: String,
   action: MavenPomContributor.() -> Unit = {},
-) {
-  contributor {
-    this.name.set(name)
-    this.email.set(email)
-    action()
-  }
+): Unit = contributor {
+  this.name.set(name)
+  this.email.set(email)
+  action()
 }

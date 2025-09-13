@@ -12,6 +12,9 @@ public abstract class PublishingOptionsExtension @Inject constructor(
   objects: ObjectFactory,
 ) : WithDefaults<PublishingOptionsExtension> {
 
+  public val withSource: Property<Boolean> =
+    objects.property(Boolean::class.java).convention(false)
+
   public val configurePom: Property<MavenPom.() -> Unit> =
     objects.property<MavenPom.() -> Unit>().convention {}
 
@@ -20,6 +23,7 @@ public abstract class PublishingOptionsExtension @Inject constructor(
   }
 
   override fun setDefaults(defaults: PublishingOptionsExtension) {
+    withSource.convention(defaults.withSource)
     configurePom.convention(defaults.configurePom)
   }
 

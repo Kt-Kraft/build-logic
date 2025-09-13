@@ -6,6 +6,7 @@ import convention.common.annotation.InternalPluginApi
 import convention.common.constant.PLUGIN_ID_ANDROID_LIBRARY
 import convention.common.constant.PLUGIN_ID_JAVA
 import convention.common.constant.PLUGIN_ID_JAVA_GRADLE_PLUGIN
+import convention.common.constant.PLUGIN_ID_KOTLIN_MULTIPLATFORM
 import convention.common.constant.PLUGIN_ID_MAVEN_PUBLISH
 import convention.common.constant.PLUGIN_ID_VERSION_CATALOG
 import convention.common.internal.hasPlugin
@@ -19,12 +20,13 @@ import org.gradle.api.publish.maven.MavenPublication
 import org.gradle.kotlin.dsl.create
 import org.gradle.kotlin.dsl.get
 import org.gradle.kotlin.dsl.getByName
+import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 
 public open class PublishPlugin @Inject constructor(
   private val pluginRegistry: PluginRegistry,
 ) : BaseConventionPlugin() {
 
-  private val publishingOptionsExtension: PublishingOptionsExtension
+  private val publishingOptions: PublishingOptionsExtension
     get() = conventionOptions.extensions.publishingOptions
 
   @InternalPluginApi
@@ -34,6 +36,7 @@ public open class PublishPlugin @Inject constructor(
     }
     pluginManager.apply(PLUGIN_ID_MAVEN_PUBLISH)
     val publicationName = when {
+      plugins.hasPlugin(PLUGIN_ID_KOTLIN_MULTIPLATFORM) -> configureKmpPublication()
       plugins.hasPlugin(PLUGIN_ID_ANDROID_LIBRARY) -> configureAndroidLibraryPublication()
       plugins.hasPlugin(PLUGIN_ID_JAVA_GRADLE_PLUGIN) && isPluginAutomatedPublishing -> configurePluginPublication()
       plugins.hasPlugin(PLUGIN_ID_VERSION_CATALOG) -> configureVersionCatalogPublication()
@@ -45,21 +48,36 @@ public open class PublishPlugin @Inject constructor(
         pom {
           name.convention(project.name)
           description.convention(project.description)
-          publishingOptionsExtension.configurePom.get().invoke(this)
+          publishingOptions.configurePom.get().invoke(this)
         }
       }
     }
+  }
+
+  private fun Project.configureKmpPublication(): String {
+    extensions.configure<KotlinMultiplatformExtension>("kotlin") {
+      withSourcesJar(publish = false)
+    }
+    publishing {
+      publications.create<MavenPublication>(PUBLICATION_NAME) {
+        afterEvaluate {
+          from(components["kotlin"])
+        }
+      }
+    }
+    return PUBLICATION_NAME
   }
 
   private fun Project.configureAndroidLibraryPublication(): String {
     extensions.configure<LibraryExtension>("android") {
       publishing {
         singleVariant("release")
-        // Disable sources and javadoc jars for now
-        /*{
-          withSourcesJar()
-          withJavadocJar()
-        }*/
+        if (publishingOptions.withSource.get()) {
+          java {
+            withSourcesJar()
+            withJavadocJar()
+          }
+        }
       }
     }
     publishing {
@@ -73,9 +91,11 @@ public open class PublishPlugin @Inject constructor(
   }
 
   private fun Project.configurePluginPublication(): String {
-    java {
-      withSourcesJar()
-      withJavadocJar()
+    if (publishingOptions.withSource.get()) {
+      java {
+        withSourcesJar()
+        withJavadocJar()
+      }
     }
     return PLUGIN_PUBLICATION_NAME
   }
@@ -90,9 +110,11 @@ public open class PublishPlugin @Inject constructor(
   }
 
   private fun Project.configureJavaLibraryPublication(): String {
-    java {
-      withSourcesJar()
-      withJavadocJar()
+    if (publishingOptions.withSource.get()) {
+      java {
+        withSourcesJar()
+        withJavadocJar()
+      }
     }
     publishing {
       publications.create<MavenPublication>(PUBLICATION_NAME) {

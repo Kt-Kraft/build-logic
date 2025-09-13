@@ -1,6 +1,8 @@
 package convention.android.internal
 
+import convention.common.utils.loadPropertiesFile
 import java.util.Properties
+import org.gradle.api.Project
 
 internal data class KeystoreConfig(
   val keyAlias: String,
@@ -20,4 +22,18 @@ internal fun Properties.loadKeystoreConfig(prefix: String): KeystoreConfig {
     storeFile = getRequiredProperty("${prefix}_STORE_FILE"),
     storePassword = getRequiredProperty("${prefix}_STORE_PASSWORD")
   )
+}
+
+internal fun Project.loadKeystoreProperties(
+  primary: String = "keystore.properties",
+  fallback: String = "keystore.defaults.properties"
+): Properties {
+  val primaryFile = rootDir.resolve(primary)
+  val fallbackFile = rootDir.resolve(fallback)
+
+  return runCatching {
+    loadPropertiesFile(primaryFile)
+  }.getOrElse {
+    loadPropertiesFile(fallbackFile)
+  }
 }

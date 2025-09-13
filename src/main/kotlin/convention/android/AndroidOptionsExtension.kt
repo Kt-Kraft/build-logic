@@ -4,6 +4,7 @@ import convention.common.WithDefaults
 import javax.inject.Inject
 import org.gradle.api.model.ObjectFactory
 import org.gradle.api.plugins.ExtensionContainer
+import org.gradle.api.provider.ListProperty
 import org.gradle.api.provider.Property
 
 public abstract class AndroidOptionsExtension @Inject constructor(
@@ -19,10 +20,14 @@ public abstract class AndroidOptionsExtension @Inject constructor(
   public val compileSdk: Property<Int> =
     objects.property(Int::class.java).convention(DEFAULT_TARGET_API)
 
+  public val localeFilters: ListProperty<String> =
+    objects.listProperty(String::class.java).convention(listOf("en", "id"))
+
   override fun setDefaults(defaults: AndroidOptionsExtension) {
     minSdk.convention(defaults.minSdk)
     targetSdk.convention(defaults.targetSdk)
     compileSdk.convention(defaults.compileSdk)
+    localeFilters.convention(defaults.localeFilters)
   }
 
   public companion object {

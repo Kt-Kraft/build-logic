@@ -78,4 +78,33 @@ private fun Project.configureCommonAndroid(
     sourceCompatibility = javaVersion.get()
     targetCompatibility = javaVersion.get()
   }
+
+  packaging {
+    // Due to https://github.com/Kotlin/kotlinx.coroutines/issues/2023
+    resources {
+      // The set of excluded patterns.
+      // Java resources matching any of these patterns do not get packaged in the APK.
+      excludes += listOf(
+        // Licenses & notices
+        "META-INF/LICENSE*",
+        "META-INF/NOTICE*",
+        "META-INF/AL2.0",
+        "META-INF/LGPL2.1",
+
+        // Metadata & duplicates
+        "META-INF/*.kotlin_module",
+        "META-INF/*.version",
+        "META-INF/INDEX.LIST",
+        "META-INF/DEPENDENCIES",
+        "META-INF/gradle/incremental.annotation.processors",
+
+        // Annotation processor outputs
+        "META-INF/services/*",
+
+        // Other unnecessary files
+        "META-INF/native-image/**",
+        "META-INF/proguard/*"
+      )
+    }
+  }
 }
