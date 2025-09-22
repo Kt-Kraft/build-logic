@@ -135,7 +135,13 @@ gradlePlugin {
     }
 
     // CommitLint
-    create("commit-lint") {
+    create("commitlint-config") {
+      id = "commitlint.config"
+      displayName = "Commitlint Config Plugin"
+      description = displayName
+      implementationClass = "convention.commitlint.CommitLintConfigPlugin"
+    }
+    create("commitlint") {
       id = "commitlint"
       displayName = "CommitLint Plugin"
       description = displayName
@@ -150,7 +156,7 @@ gradlePlugin {
  * -----------------------------------
  * */
 group = "convention"
-version = "1.8.2"
+version = "1.8.3"
 
 convention {
   publishing {
