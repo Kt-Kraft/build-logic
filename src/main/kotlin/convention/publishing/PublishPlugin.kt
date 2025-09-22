@@ -56,7 +56,7 @@ public open class PublishPlugin @Inject constructor(
 
   private fun Project.configureKmpPublication(): String {
     extensions.configure<KotlinMultiplatformExtension>("kotlin") {
-      withSourcesJar(publish = false)
+      withSourcesJar(publish = publishingOptions.withSource.get())
     }
     return KOTLIN_MULTIPLATFORM_PUBLICATION_NAME
   }
