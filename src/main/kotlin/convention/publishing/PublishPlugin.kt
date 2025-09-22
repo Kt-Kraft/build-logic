@@ -20,7 +20,6 @@ import org.gradle.api.publish.maven.MavenPublication
 import org.gradle.kotlin.dsl.create
 import org.gradle.kotlin.dsl.get
 import org.gradle.kotlin.dsl.getByName
-import org.gradle.kotlin.dsl.withType
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 
 public open class PublishPlugin @Inject constructor(
@@ -45,21 +44,11 @@ public open class PublishPlugin @Inject constructor(
       else -> error("Project type has not recognized ${project.name}.")
     }
     afterEvaluate {
-      if (publicationName == MULTIPLATFORM_PUBLICATION_NAME) {
-        publishing.publications.withType<MavenPublication> {
-          pom {
-            name.convention(project.name)
-            description.convention(project.description)
-            publishingOptions.configurePom.get().invoke(this)
-          }
-        }
-      } else {
-        publishing.publications.getByName<MavenPublication>(publicationName) {
-          pom {
-            name.convention(project.name)
-            description.convention(project.description)
-            publishingOptions.configurePom.get().invoke(this)
-          }
+      publishing.publications.getByName<MavenPublication>(publicationName) {
+        pom {
+          name.convention(project.name)
+          description.convention(project.description)
+          publishingOptions.configurePom.get().invoke(this)
         }
       }
     }
@@ -69,14 +58,7 @@ public open class PublishPlugin @Inject constructor(
     extensions.configure<KotlinMultiplatformExtension>("kotlin") {
       withSourcesJar(publish = false)
     }
-    publishing {
-      publications.create<MavenPublication>(PUBLICATION_NAME) {
-        afterEvaluate {
-          from(components["kotlin"])
-        }
-      }
-    }
-    return MULTIPLATFORM_PUBLICATION_NAME
+    return KOTLIN_MULTIPLATFORM_PUBLICATION_NAME
   }
 
   private fun Project.configureAndroidLibraryPublication(): String {
@@ -137,7 +119,7 @@ public open class PublishPlugin @Inject constructor(
 
   private companion object {
     const val PUBLICATION_NAME: String = "maven"
-    const val MULTIPLATFORM_PUBLICATION_NAME: String = "multiplatform"
     const val PLUGIN_PUBLICATION_NAME: String = "pluginMaven"
+    const val KOTLIN_MULTIPLATFORM_PUBLICATION_NAME: String = "kotlinMultiplatform"
   }
 }
