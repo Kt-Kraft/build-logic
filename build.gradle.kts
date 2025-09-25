@@ -150,7 +150,7 @@ gradlePlugin {
 
     // Swift Interop
     create("swiftinterop-config") {
-      id = "swiftinterop-config"
+      id = "swiftinterop.config"
       displayName = "Swiftinterop Config Plugin"
       description = displayName
       implementationClass = "convention.swiftinterop.SwiftInteropConfigPlugin"
@@ -170,7 +170,7 @@ gradlePlugin {
  * -----------------------------------
  * */
 group = "convention"
-version = "1.9.0"
+version = "1.9.1"
 
 convention {
   publishing {
