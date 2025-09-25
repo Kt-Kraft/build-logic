@@ -170,7 +170,7 @@ gradlePlugin {
  * -----------------------------------
  * */
 group = "convention"
-version = "1.9.1"
+version = "1.10.0"
 
 convention {
   publishing {

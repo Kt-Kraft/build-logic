@@ -58,7 +58,8 @@ public abstract class SwiftInteropPlugin @Inject constructor(
       "generateSwiftCinteropDefinition",
       GenerateSwiftCinteropDefinitionTask::class.java
     ) {
-      group = "swiftInterop"
+      group = "Swift Interop"
+      description = "generateSwiftCinteropDefinition"
       onlyIfMacos()
 
       swiftInteropModuleName.set(swiftInteropOptions.swiftInteropModuleName)
@@ -73,7 +74,8 @@ public abstract class SwiftInteropPlugin @Inject constructor(
       "generateSwiftPackageDefinition",
       GenerateSwiftPackageDefinitionTask::class.java
     ) {
-      group = "swiftInterop"
+      group = "Swift Interop"
+      description = "generateSwiftPackageDefinition"
       onlyIfMacos()
 
       swiftInteropModuleName.set(swiftInteropOptions.swiftInteropModuleName)
@@ -92,13 +94,14 @@ public abstract class SwiftInteropPlugin @Inject constructor(
         "${target.disambiguationClassifier}XcodebuildBuild",
         XcodebuildBuildTask::class.java,
       ) {
-        group = "swiftInterop"
+        group = "Swift Interop"
+        description = "XcodebuildBuild"
         onlyIfMacos()
 
         swiftInteropModuleName.set(swiftInteropOptions.swiftInteropModuleName)
         destination.set(target.destination)
         swiftPackageFile.set(generateSwiftPackageDefinition.map { it.swiftPackageFile.get() })
-        swiftSources.from("src/commonMain/swift")
+        swiftSources.from("src/iosMain/swift")
         outputDirectory.set(targetOutputDir)
       }
     }
@@ -121,7 +124,8 @@ public abstract class SwiftInteropPlugin @Inject constructor(
         "${disambiguationClassifier}CopyObjectFiles",
         Sync::class.java
       ) {
-        group = "swiftinterop"
+        group = "Swift Interop"
+        description = "CopyObjectFiles"
         onlyIfMacos()
         dependsOn(xcodebuildBuildOutput.second)
 
@@ -135,13 +139,15 @@ public abstract class SwiftInteropPlugin @Inject constructor(
         "${disambiguationClassifier}CopyHeaderFiles",
         Sync::class.java
       ) {
-        group = "swiftinterop"
+        group = "Swift Interop"
+        description = "CopyHeaderFiles"
         onlyIfMacos()
         dependsOn(xcodebuildBuildOutput.second)
 
         from(xcodeOutputDirectory) {
           include("*.h")
         }
+
         into(includeDirectory)
       }
 
@@ -149,7 +155,8 @@ public abstract class SwiftInteropPlugin @Inject constructor(
         "${disambiguationClassifier}LibtoolBuildStatic",
         LibtoolBuildStaticTask::class.java,
       ) {
-        group = "swiftinterop"
+        group = "Swift Interop"
+        description = "LibtoolBuildStatic"
         onlyIfMacos()
 
         swiftInteropModuleName.set(swiftInteropOptions.swiftInteropModuleName)
@@ -162,7 +169,6 @@ public abstract class SwiftInteropPlugin @Inject constructor(
           definitionFile.set(generateSwiftCinteropDefinition.map { it.defFile.get() })
           compilerOpts.add("-I${includeDirectory.get().asFile.absolutePath}")
           extraOpts("-libraryPath", libsDirectory.get().asFile.absolutePath)
-
           project.tasks.named(interopProcessingTaskName, CInteropProcess::class.java) {
             inputs.files(includeDirectory)
             inputs.files(libsDirectory)
