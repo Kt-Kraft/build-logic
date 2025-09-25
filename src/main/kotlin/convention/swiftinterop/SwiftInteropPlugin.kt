@@ -5,11 +5,25 @@ import convention.common.annotation.InternalPluginApi
 import convention.common.constant.PLUGIN_ID_KOTLIN_MULTIPLATFORM
 import convention.common.internal.applyPlugins
 import convention.common.internal.requiredPlugin
+import convention.swiftinterop.tasks.GenerateSwiftCinteropDefinitionTask
+import convention.swiftinterop.tasks.GenerateSwiftPackageDefinitionTask
+import convention.swiftinterop.tasks.LibtoolBuildStaticTask
+import convention.swiftinterop.tasks.XcodebuildBuildKonanTargetInfo
+import convention.swiftinterop.tasks.XcodebuildBuildTarget
+import convention.swiftinterop.tasks.XcodebuildBuildTask
 import javax.inject.Inject
 import org.gradle.api.Project
 import org.gradle.api.Task
 import org.gradle.api.internal.plugins.PluginRegistry
+import org.gradle.api.tasks.Sync
 import org.gradle.internal.os.OperatingSystem
+import org.gradle.kotlin.dsl.configure
+import org.gradle.kotlin.dsl.withType
+import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
+import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
+import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
+import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
+import org.jetbrains.kotlin.gradle.tasks.CInteropProcess
 
 public abstract class SwiftInteropPlugin @Inject constructor(
   private val pluginRegistry: PluginRegistry,
@@ -31,41 +45,43 @@ public abstract class SwiftInteropPlugin @Inject constructor(
       errorMessage = "Kotlin Multiplatform Gradle Plugin not found.",
     )
     applyPlugins(PLUGIN_ID_KOTLIN_MULTIPLATFORM)
-    // configureMultiplatform(multiplatformOptionsExtension)
+    configureSwiftInterop(swiftInteropOptions)
   }
 
-  /*override fun apply(project: Project) {
-    val swiftInterop = project.extensions.create("swiftInterop", SwiftInteropExtension::class.java)
-    val buildDirectory = project.layout.buildDirectory.dir("swiftinterop")
+  @OptIn(ExperimentalWasmDsl::class, ExperimentalKotlinGradlePluginApi::class)
+  private fun Project.configureSwiftInterop(
+    swiftInteropOptions: SwiftInteropExtension
+  ) = extensions.configure<KotlinMultiplatformExtension> {
+    val buildDirectory = layout.buildDirectory.dir("swiftInterop")
 
-    val generateSwiftCinteropDefinition = project.tasks.register(
+    val generateSwiftCinteropDefinition = tasks.register(
       "generateSwiftCinteropDefinition",
       GenerateSwiftCinteropDefinitionTask::class.java
     ) {
-      group = "swiftinterop"
+      group = "swiftInterop"
       onlyIfMacos()
 
-      swiftInteropModuleName.set(swiftInterop.swiftInteropModuleName)
-      packageName.set(swiftInterop.packageName)
-      iosVersion.set(swiftInterop.iosVersion)
-      macosVersion.set(swiftInterop.macosVersion)
-      tvosVersion.set(swiftInterop.tvosVersion)
-      watchosVersion.set(swiftInterop.watchosVersion)
+      swiftInteropModuleName.set(swiftInteropOptions.swiftInteropModuleName)
+      packageName.set(swiftInteropOptions.packageName)
+      iosVersion.set(swiftInteropOptions.iosVersion)
+      macosVersion.set(swiftInteropOptions.macosVersion)
+      tvosVersion.set(swiftInteropOptions.tvosVersion)
+      watchosVersion.set(swiftInteropOptions.watchosVersion)
       outputDirectory.set(buildDirectory.map { it.dir("cinterop") })
     }
     val generateSwiftPackageDefinition = project.tasks.register(
       "generateSwiftPackageDefinition",
       GenerateSwiftPackageDefinitionTask::class.java
     ) {
-      group = "swiftinterop"
+      group = "swiftInterop"
       onlyIfMacos()
 
-      swiftInteropModuleName.set(swiftInterop.swiftInteropModuleName)
-      swiftToolsVersion.set(swiftInterop.swiftToolsVersion)
-      iosVersion.set(swiftInterop.iosVersion)
-      macosVersion.set(swiftInterop.macosVersion)
-      tvosVersion.set(swiftInterop.tvosVersion)
-      watchosVersion.set(swiftInterop.watchosVersion)
+      swiftInteropModuleName.set(swiftInteropOptions.swiftInteropModuleName)
+      swiftToolsVersion.set(swiftInteropOptions.swiftToolsVersion)
+      iosVersion.set(swiftInteropOptions.iosVersion)
+      macosVersion.set(swiftInteropOptions.macosVersion)
+      tvosVersion.set(swiftInteropOptions.tvosVersion)
+      watchosVersion.set(swiftInteropOptions.watchosVersion)
       outputDirectory.set(buildDirectory.map { it.dir("spm") })
     }
 
@@ -76,10 +92,10 @@ public abstract class SwiftInteropPlugin @Inject constructor(
         "${target.disambiguationClassifier}XcodebuildBuild",
         XcodebuildBuildTask::class.java,
       ) {
-        group = "swiftinterop"
+        group = "swiftInterop"
         onlyIfMacos()
 
-        swiftInteropModuleName.set(swiftInterop.swiftInteropModuleName)
+        swiftInteropModuleName.set(swiftInteropOptions.swiftInteropModuleName)
         destination.set(target.destination)
         swiftPackageFile.set(generateSwiftPackageDefinition.map { it.swiftPackageFile.get() })
         swiftSources.from("src/commonMain/swift")
@@ -87,74 +103,73 @@ public abstract class SwiftInteropPlugin @Inject constructor(
       }
     }
 
-    project.extensions.configure<KotlinMultiplatformExtension>("kotlin") {
-      targets.withType(KotlinNativeTarget::class.java).all { nativeTarget ->
-        if (!nativeTarget.konanTarget.family.isAppleFamily) return@all
-        val targetInfo = XcodebuildBuildKonanTargetInfo(nativeTarget.konanTarget)
-        val xcodebuildBuildOutput = xcodebuildBuildOutputs.getValue(targetInfo.target)
+    targets.withType<KotlinNativeTarget>().configureEach {
+      if (!konanTarget.family.isAppleFamily) return@configureEach
 
-        val xcodeOutputDirectory = xcodebuildBuildOutput.first.map {
-          val buildFolderName = "${swiftInterop.swiftInteropModuleName.get()}.build"
-          it.dir("Build/Intermediates.noindex/$buildFolderName/${targetInfo.releaseFolder}/$buildFolderName/Objects-normal/${targetInfo.arch}")
+      val targetInfo = XcodebuildBuildKonanTargetInfo(konanTarget)
+      val xcodebuildBuildOutput = xcodebuildBuildOutputs.getValue(targetInfo.target)
+
+      val xcodeOutputDirectory = xcodebuildBuildOutput.first.map {
+        val buildFolderName = "${swiftInteropOptions.swiftInteropModuleName.get()}.build"
+        it.dir("Build/Intermediates.noindex/$buildFolderName/${targetInfo.releaseFolder}/$buildFolderName/Objects-normal/${targetInfo.arch}")
+      }
+
+      val includeDirectory = buildDirectory.map { it.dir("outputs/${disambiguationClassifier}/include") }
+      val libsDirectory = buildDirectory.map { it.dir("outputs/${disambiguationClassifier}/libs") }
+
+      val copyObjectFiles = project.tasks.register(
+        "${disambiguationClassifier}CopyObjectFiles",
+        Sync::class.java
+      ) {
+        group = "swiftinterop"
+        onlyIfMacos()
+        dependsOn(xcodebuildBuildOutput.second)
+
+        from(xcodeOutputDirectory) {
+          include("*.o")
         }
+        into(buildDirectory.map { it.dir("outputs/${disambiguationClassifier}/objects") })
+      }
 
-        val includeDirectory = buildDirectory.map { it.dir("outputs/${nativeTarget.disambiguationClassifier}/include") }
-        val libsDirectory = buildDirectory.map { it.dir("outputs/${nativeTarget.disambiguationClassifier}/libs") }
+      val copyHeaderFiles = project.tasks.register(
+        "${disambiguationClassifier}CopyHeaderFiles",
+        Sync::class.java
+      ) {
+        group = "swiftinterop"
+        onlyIfMacos()
+        dependsOn(xcodebuildBuildOutput.second)
 
-        val copyObjectFiles = project.tasks.register(
-          "${nativeTarget.disambiguationClassifier}CopyObjectFiles",
-          Sync::class.java
-        ) {
-          group = "swiftinterop"
-          onlyIfMacos()
-          dependsOn(xcodebuildBuildOutput.second)
-
-          from(xcodeOutputDirectory) {
-            include("*.o")
-          }
-          into(buildDirectory.map { it.dir("outputs/${nativeTarget.disambiguationClassifier}/objects") })
+        from(xcodeOutputDirectory) {
+          include("*.h")
         }
+        into(includeDirectory)
+      }
 
-        val copyHeaderFiles = project.tasks.register(
-          "${nativeTarget.disambiguationClassifier}CopyHeaderFiles",
-          Sync::class.java
-        ) {
-          group = "swiftinterop"
-          onlyIfMacos()
-          dependsOn(xcodebuildBuildOutput.second)
+      val libtoolBuildStatic = project.tasks.register(
+        "${disambiguationClassifier}LibtoolBuildStatic",
+        LibtoolBuildStaticTask::class.java,
+      ) {
+        group = "swiftinterop"
+        onlyIfMacos()
 
-          from(xcodeOutputDirectory) {
-            include("*.h")
-          }
-          into(includeDirectory)
-        }
+        swiftInteropModuleName.set(swiftInteropOptions.swiftInteropModuleName)
+        objectFiles.from(copyObjectFiles)
+        outputDirectory.set(libsDirectory)
+      }
 
-        val libtoolBuildStatic = project.tasks.register(
-          "${nativeTarget.disambiguationClassifier}LibtoolBuildStatic",
-          LibtoolBuildStaticTask::class.java,
-        ) {
-          group = "swiftinterop"
-          onlyIfMacos()
+      compilations.getByName("main") {
+        cinterops.create("swiftinterop") {
+          definitionFile.set(generateSwiftCinteropDefinition.map { it.defFile.get() })
+          compilerOpts.add("-I${includeDirectory.get().asFile.absolutePath}")
+          extraOpts("-libraryPath", libsDirectory.get().asFile.absolutePath)
 
-          swiftInteropModuleName.set(swiftInterop.swiftInteropModuleName)
-          objectFiles.from(copyObjectFiles)
-          outputDirectory.set(libsDirectory)
-        }
-
-        nativeTarget.compilations.getByName("main") { compilation ->
-          compilation.cinterops.create("swiftinterop") { cinterop ->
-            cinterop.definitionFile.set(generateSwiftCinteropDefinition.map { it.defFile.get() })
-            cinterop.compilerOpts.add("-I${includeDirectory.get().asFile.absolutePath}")
-            cinterop.extraOpts("-libraryPath", libsDirectory.get().asFile.absolutePath)
-
-            project.tasks.named(cinterop.interopProcessingTaskName, CInteropProcess::class.java) {
-              it.inputs.files(includeDirectory)
-              it.inputs.files(libsDirectory)
-              it.dependsOn(copyHeaderFiles, libtoolBuildStatic)
-            }
+          project.tasks.named(interopProcessingTaskName, CInteropProcess::class.java) {
+            inputs.files(includeDirectory)
+            inputs.files(libsDirectory)
+            dependsOn(copyHeaderFiles, libtoolBuildStatic)
           }
         }
       }
     }
-  }*/
+  }
 }

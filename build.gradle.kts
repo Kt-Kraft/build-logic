@@ -147,6 +147,20 @@ gradlePlugin {
       description = displayName
       implementationClass = "convention.commitlint.CommitLintPlugin"
     }
+
+    // Swift Interop
+    create("swiftinterop-config") {
+      id = "swiftinterop-config"
+      displayName = "Swiftinterop Config Plugin"
+      description = displayName
+      implementationClass = "convention.swiftinterop.SwiftInteropConfigPlugin"
+    }
+    create("swiftinterop") {
+      id = "swiftinterop"
+      displayName = "Swiftinterop Plugin"
+      description = displayName
+      implementationClass = "convention.swiftinterop.SwiftInteropPlugin"
+    }
   }
 }
 
@@ -156,7 +170,7 @@ gradlePlugin {
  * -----------------------------------
  * */
 group = "convention"
-version = "1.8.3"
+version = "1.9.0"
 
 convention {
   publishing {
@@ -172,7 +186,7 @@ convention {
         developer(
           id = "indramahkota",
           name = "Indra Mahkota",
-          email = "indramahkota1@gmail.com",
+          email = "contact@indramahkota.info",
         )
       }
     }
