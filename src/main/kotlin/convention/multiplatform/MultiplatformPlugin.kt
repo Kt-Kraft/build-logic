@@ -16,6 +16,7 @@ import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
+import org.jetbrains.kotlin.gradle.plugin.mpp.apple.XCFramework
 
 public open class MultiplatformPlugin @Inject constructor(
   private val pluginRegistry: PluginRegistry,
@@ -104,6 +105,7 @@ public open class MultiplatformPlugin @Inject constructor(
       nativeTargets += watchosSimulatorArm64()
     }
 
+    val xcf = XCFramework()
     nativeTargets.forEach { target ->
       target.binaries.framework {
         baseName = path.substring(1).replace(':', '_')
@@ -112,6 +114,7 @@ public open class MultiplatformPlugin @Inject constructor(
           .replace(Regex("-(.)")) { it.groupValues[1].uppercase() }
         freeCompilerArgs += "-Xbinary=bundleId=$bundleId"
         isStatic = true
+        xcf.add(this)
       }
     }
 
