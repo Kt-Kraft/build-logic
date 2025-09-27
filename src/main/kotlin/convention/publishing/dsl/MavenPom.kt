@@ -29,7 +29,7 @@ public data class GithubProject(
   }
 }
 
-public fun MavenPom.setGitHubProject(
+public fun MavenPom.github(
   owner: String,
   repository: String,
   action: GithubProject.() -> Unit = {},
