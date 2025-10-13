@@ -1,7 +1,6 @@
-import com.github.benmanes.gradle.versions.updates.DependencyUpdatesTask
 import convention.publishing.dsl.developer
+import convention.publishing.dsl.github
 import convention.publishing.dsl.mit
-import convention.publishing.dsl.setGitHubProject
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
@@ -15,6 +14,7 @@ plugins {
   alias(libs.plugins.convention.publish.config)
   alias(libs.plugins.convention.publishing)
   alias(libs.plugins.convention.commitlint)
+  alias(libs.plugins.convention.commitlint.config)
 }
 
 // https://kotlinlang.org/docs/gradle-configure-project.html#apply-the-plugin
@@ -27,12 +27,10 @@ plugins {
 // 8.5              |	8.7
 
 dependencies {
-  implementation(libs.android.r8)
   implementation(libs.android.tools.build)
   implementation(libs.android.tools.common)
   implementation(libs.kotlin.gradle.plugin)
   implementation(libs.compose.compiler.gradle.plugin)
-  implementation(libs.jgit)
   implementation(libs.secret.gradle.plugin)
   implementation(libs.kase.change)
   testImplementation(kotlin("test"))
@@ -48,19 +46,6 @@ kotlin {
 
 tasks.test {
   useJUnitPlatform()
-}
-
-fun isNonStable(version: String): Boolean {
-  val stableKeyword = listOf("RELEASE", "FINAL", "GA").any { version.uppercase().contains(it) }
-  val regex = "^[0-9,.v-]+(-r)?$".toRegex()
-  val isStable = stableKeyword || regex.matches(version)
-  return isStable.not()
-}
-
-tasks.withType<DependencyUpdatesTask> {
-  rejectVersionIf {
-    isNonStable(candidate.version)
-  }
 }
 
 versionCatalogUpdate {
@@ -175,10 +160,10 @@ version = "1.10.2"
 convention {
   publishing {
     pom {
-      setGitHubProject {
-        owner = "Kt-Kraft"
+      github(
+        owner = "Kt-Kraft",
         repository = "build-logic"
-      }
+      )
 
       licenses { mit() }
 

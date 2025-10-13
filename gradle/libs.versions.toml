@@ -1,21 +1,17 @@
 [versions]
 androidToolsBuild = "8.13.0"
 androidToolsCommon = "31.13.0"
-benManes = "0.52.0"
-catalogUpdate = "1.0.0"
-indramahkota = "1.5.0"
-jgit = "7.3.0.202506031305-r"
+benManes = "0.53.0"
+catalogUpdate = "1.0.1"
+indramahkota = "1.10.3"
 kaseChange = "1.4.1"
-kotlin = "2.2.10"
-r8Version = "8.11.18"
+kotlin = "2.2.20"
 secrets = "2.0.1"
 
 [libraries]
-android-r8 = { module = "com.android.tools:r8", version.ref = "r8Version" }
 android-tools-build = { module = "com.android.tools.build:gradle", version.ref = "androidToolsBuild" }
 android-tools-common = { module = "com.android.tools:common", version.ref = "androidToolsCommon" }
 compose-compiler-gradle-plugin = { module = "org.jetbrains.kotlin:compose-compiler-gradle-plugin", version.ref = "kotlin" }
-jgit = { module = "org.eclipse.jgit:org.eclipse.jgit", version.ref = "jgit" }
 kase-change = { module = "net.pearx.kasechange:kasechange-jvm", version.ref = "kaseChange" }
 kotlin-gradle-plugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
 secret-gradle-plugin = { module = "com.google.android.libraries.mapsplatform.secrets-gradle-plugin:secrets-gradle-plugin", version.ref = "secrets" }
@@ -23,6 +19,7 @@ secret-gradle-plugin = { module = "com.google.android.libraries.mapsplatform.sec
 [plugins]
 ben-manes-versions = { id = "com.github.ben-manes.versions", version.ref = "benManes" }
 convention-commitlint = { id = "commitlint", version.ref = "indramahkota" }
+convention-commitlint-config = { id = "commitlint.config", version.ref = "indramahkota" }
 convention-publish-config = { id = "publish.config", version.ref = "indramahkota" }
 convention-publishing = { id = "publish", version.ref = "indramahkota" }
 version-catalog-update = { id = "nl.littlerobots.version-catalog-update", version.ref = "catalogUpdate" }
