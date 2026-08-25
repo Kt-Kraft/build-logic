@@ -10,7 +10,9 @@ import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.Optional
 import org.gradle.api.tasks.OutputDirectory
 import org.gradle.api.tasks.TaskAction
+import org.gradle.work.DisableCachingByDefault
 
+@DisableCachingByDefault(because = "Generating a small definition file is not worth caching")
 public abstract class GenerateSwiftCinteropDefinitionTask : DefaultTask() {
 
   @get:Input

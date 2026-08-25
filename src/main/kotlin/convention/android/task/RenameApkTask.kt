@@ -15,28 +15,38 @@ import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.InputDirectory
 import org.gradle.api.tasks.InputFile
 import org.gradle.api.tasks.Internal
+import org.gradle.api.tasks.PathSensitive
+import org.gradle.api.tasks.PathSensitivity
 import org.gradle.api.tasks.TaskAction
+import org.gradle.work.DisableCachingByDefault
 
+@DisableCachingByDefault(because = "Copying and renaming artifacts is not worth caching")
 public abstract class RenameApkTask : DefaultTask() {
 
   @get:Internal
   public abstract val mBuiltArtifactsLoader: Property<BuiltArtifactsLoader>
 
+  @get:PathSensitive(PathSensitivity.RELATIVE)
   @get:InputDirectory
   public abstract val inputApkDirectory: DirectoryProperty
 
+  @get:PathSensitive(PathSensitivity.RELATIVE)
   @get:InputFile
   public abstract val inputStringsFile: RegularFileProperty
 
+  @get:PathSensitive(PathSensitivity.RELATIVE)
   @get:InputFile
   public abstract val inputManifestFile: RegularFileProperty
 
+  @get:PathSensitive(PathSensitivity.RELATIVE)
   @get:InputFile
   public abstract val inputMappingFile: RegularFileProperty
 
+  @get:PathSensitive(PathSensitivity.RELATIVE)
   @get:InputDirectory
   public abstract val inputRootDirectory: DirectoryProperty
 
+  @get:PathSensitive(PathSensitivity.RELATIVE)
   @get:InputDirectory
   public abstract val inputProjectBuildDirectory: DirectoryProperty
 

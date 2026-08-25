@@ -1,11 +1,11 @@
 [versions]
-androidToolsBuild = "8.12.0"
-androidToolsCommon = "31.12.0"
-benManes = "0.53.0"
-catalogUpdate = "1.0.1"
-indramahkota = "1.10.3"
+androidToolsBuild = "9.3.2"
+androidToolsCommon = "32.3.2"
+benManes = "0.61.0"
+catalogUpdate = "1.1.1"
+indramahkota = "1.10.4"
 kaseChange = "1.4.1"
-kotlin = "2.2.20"
+kotlin = "2.4.10"
 secrets = "2.0.1"
 
 [libraries]

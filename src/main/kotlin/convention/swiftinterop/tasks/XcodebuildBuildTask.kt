@@ -14,7 +14,9 @@ import org.gradle.api.tasks.PathSensitive
 import org.gradle.api.tasks.PathSensitivity
 import org.gradle.api.tasks.TaskAction
 import org.gradle.process.ExecOperations
+import org.gradle.work.DisableCachingByDefault
 
+@DisableCachingByDefault(because = "Output depends on the local Xcode toolchain")
 public abstract class XcodebuildBuildTask : DefaultTask() {
 
   @get:Input

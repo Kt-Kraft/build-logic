@@ -1,6 +1,6 @@
 package convention.compose.internal
 
-import com.android.build.api.dsl.CommonExtension
+import convention.android.internal.CommonExtension
 import convention.android.internal.android
 import org.gradle.api.Project
 import org.gradle.api.file.DirectoryProperty
@@ -10,10 +10,8 @@ import org.jetbrains.kotlin.compose.compiler.gradle.ComposeCompilerGradlePluginE
 internal fun Project.configureCompose(
   reportsDir: DirectoryProperty,
 ) {
-  android<CommonExtension<*, *, *, *, *, *>> {
-    buildFeatures {
-      compose = true
-    }
+  android<CommonExtension> {
+    buildFeatures.compose = true
   }
   extensions.configure<ComposeCompilerGradlePluginExtension> {
     reportsDestination.set(reportsDir.dir("compose-reports"))

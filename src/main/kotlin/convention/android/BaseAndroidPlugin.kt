@@ -1,6 +1,6 @@
 package convention.android
 
-import com.android.build.api.dsl.CommonExtension
+import convention.android.internal.CommonExtension
 import convention.android.internal.android
 import convention.common.BaseConventionPlugin
 import convention.common.annotation.InternalPluginApi
@@ -51,19 +51,23 @@ private fun Project.configureKotlinAndroid(
 private fun Project.configureCommonAndroid(
   androidOptions: AndroidOptionsExtension,
   javaVersion: Provider<JavaVersion>,
-) = android<CommonExtension<*, *, *, *, *, *>> {
+) = android<CommonExtension> {
   // Ensure that compileSdk is never lower than targetSdk.
   // - If compileSdk <= targetSdk, use targetSdk instead (safe upper bound).
   // - Otherwise, use the declared compileSdk.
   // This avoids build errors or warnings caused by setting compileSdk
   // lower than the app’s targetSdk (which Android Gradle Plugin disallows).
-  val compileSdkCondition = androidOptions.compileSdk.get() <= androidOptions.targetSdk.get()
-  compileSdk = if (compileSdkCondition) androidOptions.targetSdk.get() else androidOptions.compileSdk.get()
+  compileSdk {
+    version = release(
+      maxOf(
+        androidOptions.compileSdk.get(),
+        androidOptions.targetSdk.get()
+      )
+    )
+  }
 
   // Sets the minimum Android SDK version supported by the app.
-  defaultConfig {
-    minSdk = androidOptions.minSdk.get()
-  }
+  defaultConfig.minSdk = androidOptions.minSdk.get()
 
   // Configure Java compilation compatibility.
   // Both sourceCompatibility and targetCompatibility are set to the
@@ -74,37 +78,35 @@ private fun Project.configureCommonAndroid(
   //
   // Keeping them equal ensures consistent compilation and avoids
   // mismatches with the Kotlin jvmTarget setting.
-  compileOptions {
+  compileOptions.apply {
     sourceCompatibility = javaVersion.get()
     targetCompatibility = javaVersion.get()
   }
 
-  packaging {
-    // Due to https://github.com/Kotlin/kotlinx.coroutines/issues/2023
-    resources {
-      // The set of excluded patterns.
-      // Java resources matching any of these patterns do not get packaged in the APK.
-      excludes += listOf(
-        // Licenses & notices
-        "META-INF/LICENSE*",
-        "META-INF/NOTICE*",
-        "META-INF/AL2.0",
-        "META-INF/LGPL2.1",
+  // Due to https://github.com/Kotlin/kotlinx.coroutines/issues/2023
+  packaging.resources {
+    // The set of excluded patterns.
+    // Java resources matching any of these patterns do not get packaged in the APK.
+    excludes += listOf(
+      // Licenses & notices
+      "META-INF/LICENSE*",
+      "META-INF/NOTICE*",
+      "META-INF/AL2.0",
+      "META-INF/LGPL2.1",
 
-        // Metadata & duplicates
-        "META-INF/*.kotlin_module",
-        "META-INF/*.version",
-        "META-INF/INDEX.LIST",
-        "META-INF/DEPENDENCIES",
-        "META-INF/gradle/incremental.annotation.processors",
+      // Metadata & duplicates
+      "META-INF/*.kotlin_module",
+      "META-INF/*.version",
+      "META-INF/INDEX.LIST",
+      "META-INF/DEPENDENCIES",
+      "META-INF/gradle/incremental.annotation.processors",
 
-        // Annotation processor outputs
-        "META-INF/services/*",
+      // Annotation processor outputs
+      "META-INF/services/*",
 
-        // Other unnecessary files
-        "META-INF/native-image/**",
-        "META-INF/proguard/*"
-      )
-    }
+      // Other unnecessary files
+      "META-INF/native-image/**",
+      "META-INF/proguard/*"
+    )
   }
 }
