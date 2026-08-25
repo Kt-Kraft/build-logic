@@ -1,7 +1,13 @@
+@file:Suppress("UnstableApiUsage")
+
 package convention.multiplatform
 
+import com.android.build.api.dsl.KotlinMultiplatformAndroidLibraryExtension
+import convention.android.AndroidOptionsExtension
+import convention.android.androidOptions
 import convention.common.BaseConventionPlugin
 import convention.common.annotation.InternalPluginApi
+import convention.common.constant.PLUGIN_ID_ANDROID_KMP_LIBRARY
 import convention.common.constant.PLUGIN_ID_KOTLIN_MULTIPLATFORM
 import convention.common.internal.applyPlugins
 import convention.common.internal.requiredPlugin
@@ -25,6 +31,9 @@ public open class MultiplatformPlugin @Inject constructor(
   private val multiplatformOptionsExtension: MultiplatformOptionsExtension
     get() = conventionOptions.extensions.multiplatformOptions
 
+  private val androidOptions: AndroidOptionsExtension
+    get() = conventionOptions.extensions.androidOptions
+
   @InternalPluginApi
   override fun Project.configure() {
     pluginRegistry.requiredPlugin(
@@ -32,6 +41,13 @@ public open class MultiplatformPlugin @Inject constructor(
       errorMessage = "Kotlin Multiplatform Gradle Plugin not found.",
     )
     applyPlugins(PLUGIN_ID_KOTLIN_MULTIPLATFORM)
+    if (multiplatformOptionsExtension.android.get()) {
+      pluginRegistry.requiredPlugin(
+        pluginId = PLUGIN_ID_ANDROID_KMP_LIBRARY,
+        errorMessage = "Android Kotlin Multiplatform Library Gradle Plugin not found.",
+      )
+      applyPlugins(PLUGIN_ID_ANDROID_KMP_LIBRARY)
+    }
     configureMultiplatform(multiplatformOptionsExtension)
   }
 
@@ -70,11 +86,18 @@ public open class MultiplatformPlugin @Inject constructor(
       nodejs()
     }
 
-    if (android) androidTarget {
-      publishLibraryVariants("release")
-      compilerOptions {
-        jvmTarget.set(conventionOptions.jvmTarget)
-        addDistinctCompilerArgs(Config.jvmCompilerArgs)
+    if (android) {
+      extensions.configure<KotlinMultiplatformAndroidLibraryExtension> {
+        compileSdk {
+          version = release(
+            maxOf(
+              androidOptions.compileSdk.get(),
+              androidOptions.targetSdk.get()
+            )
+          )
+        }
+
+        minSdk = androidOptions.minSdk.get()
       }
     }
 

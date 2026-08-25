@@ -18,6 +18,9 @@ public const val PLUGIN_ID_ANDROID_APPLICATION: String = "com.android.applicatio
 public const val PLUGIN_ID_ANDROID_LIBRARY: String = "com.android.library"
 
 @InternalPluginApi
+public const val PLUGIN_ID_ANDROID_KMP_LIBRARY: String = "com.android.kotlin.multiplatform.library"
+
+@InternalPluginApi
 public const val PLUGIN_ID_VERSION_CATALOG: String = "org.gradle.version-catalog"
 
 @InternalPluginApi

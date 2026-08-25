@@ -15,6 +15,7 @@ plugins {
   alias(libs.plugins.convention.publishing)
   alias(libs.plugins.convention.commitlint)
   alias(libs.plugins.convention.commitlint.config)
+  alias(libs.plugins.kotlin.serialization)
 }
 
 // https://kotlinlang.org/docs/gradle-configure-project.html#apply-the-plugin
@@ -33,6 +34,12 @@ dependencies {
   implementation(libs.compose.compiler.gradle.plugin)
   implementation(libs.secret.gradle.plugin)
   implementation(libs.kase.change)
+  implementation(libs.bundles.ktor.common)
+  implementation(libs.ktor.client.cio)
+  implementation(libs.kotlinx.serialization.json)
+  implementation(libs.sdk.common)
+  implementation(libs.kotlinpoet)
+  implementation(libs.xpp3)
   testImplementation(kotlin("test"))
 }
 
@@ -145,6 +152,15 @@ gradlePlugin {
       displayName = "Swiftinterop Plugin"
       description = displayName
       implementationClass = "convention.swiftinterop.SwiftInteropPlugin"
+    }
+
+    // Icons
+    create("symbolcraft") {
+      id = "symbolcraft"
+      displayName = "SymbolCraft Icon Generator"
+      description =
+        "Generate icons on-demand from multiple libraries (Material Symbols, Bootstrap Icons, etc.) for Compose Multiplatform with smart caching."
+      implementationClass = "convention.icons.plugin.SymbolCraftPlugin"
     }
   }
 }
