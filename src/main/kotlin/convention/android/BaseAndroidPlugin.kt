@@ -3,14 +3,11 @@ package convention.android
 import convention.android.internal.CommonExtension
 import convention.android.internal.android
 import convention.common.BaseConventionPlugin
+import convention.common.ConventionOptionsExtension
 import convention.common.annotation.InternalPluginApi
-import convention.common.utils.Config
 import convention.common.utils.addDistinctCompilerArgs
 import convention.common.utils.addDistinctOptIns
-import org.gradle.api.JavaVersion
 import org.gradle.api.Project
-import org.gradle.api.provider.Provider
-import org.gradle.jvm.toolchain.JavaLanguageVersion
 import org.gradle.kotlin.dsl.configure
 import org.gradle.kotlin.dsl.withType
 import org.jetbrains.kotlin.gradle.dsl.KotlinAndroidProjectExtension
@@ -23,26 +20,25 @@ public abstract class BaseAndroidPlugin : BaseConventionPlugin() {
 
   @InternalPluginApi
   protected fun Project.configureCommonAndroid() {
-    configureKotlinAndroid(conventionOptions.jvmToolchainVersion)
-    configureCommonAndroid(androidOptions, conventionOptions.javaVersion)
+    configureKotlinAndroid(conventionOptions)
+    configureCommonAndroid(androidOptions, conventionOptions)
   }
 }
 
 private fun Project.configureKotlinAndroid(
-  toolchainVersion: Provider<Int>
+  conventionOptions: ConventionOptionsExtension,
 ) {
   plugins.withType<AbstractKotlinAndroidPluginWrapper> {
     configure<KotlinAndroidProjectExtension> {
       explicitApi()
       compilerOptions {
-        addDistinctCompilerArgs(Config.compilerArgs)
-        addDistinctOptIns(Config.optIns)
+        addDistinctCompilerArgs(conventionOptions.freeCompilerArgs.get())
+        addDistinctOptIns(conventionOptions.optIns.get())
         progressiveMode.set(true)
+        jvmTarget.set(conventionOptions.jvmTarget)
       }
       jvmToolchain {
-        languageVersion.set(
-          JavaLanguageVersion.of(toolchainVersion.get())
-        )
+        languageVersion.set(conventionOptions.jvmToolchainLanguageVersion)
       }
     }
   }
@@ -50,7 +46,7 @@ private fun Project.configureKotlinAndroid(
 
 private fun Project.configureCommonAndroid(
   androidOptions: AndroidOptionsExtension,
-  javaVersion: Provider<JavaVersion>,
+  conventionOptions: ConventionOptionsExtension,
 ) = android<CommonExtension> {
   // Ensure that compileSdk is never lower than targetSdk.
   // - If compileSdk <= targetSdk, use targetSdk instead (safe upper bound).
@@ -79,8 +75,8 @@ private fun Project.configureCommonAndroid(
   // Keeping them equal ensures consistent compilation and avoids
   // mismatches with the Kotlin jvmTarget setting.
   compileOptions.apply {
-    sourceCompatibility = javaVersion.get()
-    targetCompatibility = javaVersion.get()
+    sourceCompatibility = conventionOptions.javaVersion.get()
+    targetCompatibility = conventionOptions.javaVersion.get()
   }
 
   // Due to https://github.com/Kotlin/kotlinx.coroutines/issues/2023

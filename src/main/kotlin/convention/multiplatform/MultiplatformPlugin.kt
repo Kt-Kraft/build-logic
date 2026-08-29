@@ -11,7 +11,6 @@ import convention.common.constant.PLUGIN_ID_ANDROID_KMP_LIBRARY
 import convention.common.constant.PLUGIN_ID_KOTLIN_MULTIPLATFORM
 import convention.common.internal.applyPlugins
 import convention.common.internal.requiredPlugin
-import convention.common.utils.Config
 import convention.common.utils.addDistinctCompilerArgs
 import convention.common.utils.addDistinctOptIns
 import javax.inject.Inject
@@ -59,6 +58,9 @@ public open class MultiplatformPlugin @Inject constructor(
       multiplatformOptionsExtension
 
     explicitApi()
+    jvmToolchain {
+      languageVersion.set(conventionOptions.jvmToolchainLanguageVersion)
+    }
 
     applyDefaultHierarchyTemplate()
 
@@ -101,7 +103,11 @@ public open class MultiplatformPlugin @Inject constructor(
       }
     }
 
-    if (jvm) jvm()
+    if (jvm) jvm {
+      compilerOptions {
+        jvmTarget.set(conventionOptions.jvmTarget)
+      }
+    }
 
     val nativeTargets = mutableListOf<KotlinNativeTarget>()
 
@@ -145,7 +151,7 @@ public open class MultiplatformPlugin @Inject constructor(
       all {
         languageSettings {
           progressiveMode = true
-          Config.optIns.forEach { optIn(it) }
+          conventionOptions.optIns.get().forEach { optIn(it) }
         }
       }
     }
@@ -154,8 +160,8 @@ public open class MultiplatformPlugin @Inject constructor(
       compilations.all {
         compileTaskProvider.configure {
           compilerOptions {
-            addDistinctCompilerArgs(Config.compilerArgs)
-            addDistinctOptIns(Config.optIns)
+            addDistinctCompilerArgs(conventionOptions.freeCompilerArgs.get())
+            addDistinctOptIns(conventionOptions.optIns.get())
             progressiveMode.set(true)
           }
         }

@@ -67,13 +67,20 @@ plugins {
   alias(libs.plugins.convention.compose.app) apply false
   alias(libs.plugins.convention.compose.lib) apply false
   alias(libs.plugins.convention.publishing) apply false
+  alias(libs.plugins.convention.jvm) apply false
   alias(libs.plugins.convention.android.config)
   alias(libs.plugins.convention.publish.config)
   alias(libs.plugins.convention.commitlint)
+  alias(libs.plugins.convention.spotless)
+  alias(libs.plugins.convention.detekt)
+  alias(libs.plugins.convention.dependency.analysis)
 }
 
 // Initial configuration for subprojects
 convention {
+  jvmToolchainVersion.set(21)
+  jvmTarget.set(JvmTarget.JVM_17)
+
   multiplatform {
     android.set(true)
     iOS.set(true)
@@ -83,6 +90,18 @@ convention {
     minSdk.set(28)
     targetSdk.set(35)
     compileSdk.set(35)
+  }
+
+  spotless {
+    ktfmtVersion.set("0.64")
+  }
+
+  detekt {
+    configFileName.set("detekt/detekt.yml")
+  }
+
+  dependencyAnalysis {
+    severity.set("fail")
   }
 
   publishing {

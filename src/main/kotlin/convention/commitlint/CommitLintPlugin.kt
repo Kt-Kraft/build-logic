@@ -18,26 +18,50 @@ public open class CommitLintPlugin @Inject constructor(
 
   @InternalPluginApi
   override fun Project.configure() {
+    val repoRoot = rootDir
+    val msgFileProperty = providers.systemProperty(MSG_FILE_PROPERTY)
+    val enforceRefs = commitLintOptions.enforceRefs
+
     tasks.register("commitLint") {
       group = "Build Logic"
       description = "Commit Message Verification"
 
       doLast {
-        val msg = File(rootDir, ".git/COMMIT_EDITMSG").readText()
-        CommitLintUtil.validate(msg, commitLintOptions.enforceRefs.get())
+        val msgFile = resolveMessageFile(repoRoot, msgFileProperty.orNull)
+        CommitLintUtil.validate(msgFile.readText(), enforceRefs.get())
       }
     }
 
-    afterEvaluate {
-      val hooksDir = File(rootDir, ".git/hooks")
-      val gradlewFile = File(rootDir, "gradlew")
-
-      if (!hooksDir.exists()) {
-        hooksDir.mkdirs()
-      }
-
-      val gitHook = GitHook("commit-msg", "commitLint -Dorg.gradle.configuration-cache=false -Dmsgfile=\\\$1")
-      GitHookWriter(gradlewFile.absolutePath, hooksDir.absolutePath, gitHook).write()
-    }
+    installCommitMsgHook(repoRoot)
   }
+
+  private companion object {
+    const val MSG_FILE_PROPERTY = "msgfile"
+  }
+}
+
+private const val DEFAULT_MSG_FILE = ".git/COMMIT_EDITMSG"
+
+private fun resolveMessageFile(repoRoot: File, msgFile: String?): File {
+  val path = msgFile?.trim().orEmpty()
+  if (path.isEmpty()) {
+    return File(repoRoot, DEFAULT_MSG_FILE)
+  }
+  return File(path).takeIf { it.isAbsolute } ?: File(repoRoot, path)
+}
+
+private fun installCommitMsgHook(repoRoot: File) {
+  if (!File(repoRoot, ".git").exists()) {
+    return
+  }
+
+  val hook = GitHook(
+    name = "commit-msg",
+    gradleArgs = listOf(
+      "commitLint",
+      "-Dorg.gradle.configuration-cache=false",
+      "-Dmsgfile=\"\$1\"",
+    ),
+  )
+  GitHookWriter(File(repoRoot, ".git/hooks"), hook).write()
 }

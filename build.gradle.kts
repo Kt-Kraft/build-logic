@@ -31,6 +31,9 @@ dependencies {
   implementation(libs.android.tools.build)
   implementation(libs.android.tools.common)
   implementation(libs.kotlin.gradle.plugin)
+  implementation(libs.spotless.plugin.gradle)
+  implementation(libs.detekt.gradle.plugin)
+  implementation(libs.dependency.analysis.gradle.plugin)
   implementation(libs.compose.compiler.gradle.plugin)
   implementation(libs.secret.gradle.plugin)
   implementation(libs.kase.change)
@@ -96,6 +99,34 @@ gradlePlugin {
       displayName = "Compose Library Plugin"
       description = displayName
       implementationClass = "convention.compose.ComposeLibraryPlugin"
+    }
+
+    // JVM
+    create("jvm") {
+      id = "jvm"
+      displayName = "Kotlin JVM Plugin"
+      description = displayName
+      implementationClass = "convention.jvm.JvmPlugin"
+    }
+
+    // Quality
+    create("spotless") {
+      id = "spotless"
+      displayName = "Spotless Plugin"
+      description = displayName
+      implementationClass = "convention.quality.SpotlessPlugin"
+    }
+    create("detekt") {
+      id = "detekt"
+      displayName = "Detekt Plugin"
+      description = displayName
+      implementationClass = "convention.quality.DetektPlugin"
+    }
+    create("dependency-analysis") {
+      id = "dependency.analysis"
+      displayName = "Dependency Analysis Plugin"
+      description = displayName
+      implementationClass = "convention.quality.DependencyAnalysisPlugin"
     }
 
     // Multiplatform
@@ -171,7 +202,7 @@ gradlePlugin {
  * -----------------------------------
  * */
 group = "convention"
-version = "1.11.0"
+version = "1.12.0"
 
 convention {
   publishing {

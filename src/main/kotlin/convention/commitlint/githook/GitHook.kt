@@ -2,29 +2,35 @@ package convention.commitlint.githook
 
 public data class GitHook(
   val name: String,
-  var task: String? = null,
-  var shell: String? = null
+  val gradleArgs: List<String> = emptyList(),
+  val shell: String? = null,
 ) {
 
-  public fun taskScript(gradleCommand: String): String {
-    return task?.takeIf { it.isNotBlank() }?.let {
-      """
-      |$(echo "$gradleCommand") $it
-      |$CHECK_EXIT_STATUS
-      """.trimMargin()
-    }.orEmpty()
+  public fun script(): String {
+    val blocks = buildList {
+      add("""ROOT="${D}(git rev-parse --show-toplevel)"""")
+      gradleScript()?.let(::add)
+      shell?.takeIf { it.isNotBlank() }?.trimEnd()?.let(::add)
+      add("exit $D?")
+    }
+    return blocks.joinToString(
+      separator = "\n\n",
+      prefix = "#!/bin/sh\n$IDENTIFIER\n\n",
+      postfix = "\n",
+    )
   }
 
-  public fun shellScript(): String {
-    return shell?.takeIf { it.isNotBlank() }?.let {
-      """
-      |$it
-      |$CHECK_EXIT_STATUS
-      """.trimMargin()
-    }.orEmpty()
+  private fun gradleScript(): String? {
+    if (gradleArgs.isEmpty()) return null
+    return gradleArgs.joinToString(
+      separator = " \\\n  ",
+      prefix = """"${D}ROOT/gradlew" \""" + "\n  ",
+    )
   }
 
   public companion object {
-    private const val CHECK_EXIT_STATUS = "[ \$? -gt 0 ] && exit 1"
+    internal const val IDENTIFIER: String = "# build-logic-githook"
+
+    private const val D: String = "$"
   }
 }

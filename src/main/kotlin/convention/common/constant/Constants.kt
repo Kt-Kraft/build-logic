@@ -9,6 +9,9 @@ public const val PLUGIN_ID_JAVA: String = "java"
 public const val PLUGIN_ID_KOTLIN_MULTIPLATFORM: String = "org.jetbrains.kotlin.multiplatform"
 
 @InternalPluginApi
+public const val PLUGIN_ID_KOTLIN_JVM: String = "org.jetbrains.kotlin.jvm"
+
+@InternalPluginApi
 public const val PLUGIN_ID_KOTLIN_ANDROID: String = "org.jetbrains.kotlin.android"
 
 @InternalPluginApi
@@ -37,6 +40,15 @@ public const val PLUGIN_ID_CONVENTION_ANDROID_APP: String = "android.app"
 
 @InternalPluginApi
 public const val PLUGIN_ID_CONVENTION_ANDROID_LIB: String = "android.lib"
+
+@InternalPluginApi
+public const val PLUGIN_ID_SPOTLESS: String = "com.diffplug.spotless"
+
+@InternalPluginApi
+public const val PLUGIN_ID_DETEKT: String = "dev.detekt"
+
+@InternalPluginApi
+public const val PLUGIN_ID_DEPENDENCY_ANALYSIS: String = "com.autonomousapps.dependency-analysis"
 
 @InternalPluginApi
 public const val SECRET_GRADLEW_PLUGIN: String = "com.google.android.libraries.mapsplatform.secrets-gradle-plugin"

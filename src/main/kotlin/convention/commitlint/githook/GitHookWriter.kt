@@ -3,17 +3,12 @@ package convention.commitlint.githook
 import java.io.File
 
 public class GitHookWriter(
-  private val gradlewFile: String,
-  private val hooksDir: String,
+  private val hooksDir: File,
   private val hook: GitHook,
 ) {
 
   public fun write() {
-    writeFile(hook)
-  }
-
-  private fun writeFile(hook: GitHook) {
-    if (!hookFiles.contains(hook.name)) {
+    if (hook.name !in SUPPORTED_HOOKS) {
       return
     }
 
@@ -22,32 +17,31 @@ public class GitHookWriter(
       return
     }
 
-    file.writeText(getScript(gradlewFile, hook))
-    file.setExecutable(true)
+    val script = hook.script()
+    if (file.exists() && file.readText() == script) {
+      file.ensureExecutable()
+      return
+    }
+
+    hooksDir.mkdirs()
+    file.writeText(script)
+    file.ensureExecutable()
   }
 
-  private fun getScript(gradleCommand: String, hook: GitHook): String {
-    return """
-        |#!/bin/sh
-        |$IDENTIFIER
-        |
-        |${hook.taskScript(gradleCommand)}
-        |
-        |${hook.shellScript()}
-        |
-        |exit 0
-        """.trimMargin()
+  private fun File.ensureExecutable() {
+    if (!canExecute()) {
+      setExecutable(true)
+    }
   }
 
   private fun isUserCreated(file: File): Boolean {
     if (!file.exists()) {
       return false
     }
-    return file.readText().indexOf(IDENTIFIER) == -1
+    return !file.readText().contains(GitHook.IDENTIFIER)
   }
 
   public companion object {
-    private const val IDENTIFIER = "# build-logic-githook"
-    private val hookFiles = listOf("commit-msg")
+    private val SUPPORTED_HOOKS = setOf("commit-msg")
   }
 }
